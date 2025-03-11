@@ -1,24 +1,38 @@
-import Card from "@/components/Card";
+import InputCard from "@/components/InputCard";
 
-import { content } from "@/types/card";
+import { inputContent } from "@/types/card";
 
 const Addtransactions = () => {
-  const contents: content[] = [
+  const contents: inputContent[] = [  
     {
-        name: "名前",
-        id: "name",
-        placeholder: "相手の名前",
-        inputType: "text"
+      name: "形態",
+      id: "format",
+      options: [
+        "借り",
+        "貸し",
+      ]
     },
     {
-        name: "¥",
-        id: "money",
-        placeholder: "金額",
-        inputType: "number"
-    }
-];
+      name: "名前",
+      id: "name",
+      placeholder: "相手の名前",
+      inputType: "text",
+    },
+    {
+      name: "金額",
+      id: "money",
+      placeholder: "\\",
+      inputType: "number",
+    },
+    {
+      name: "期日",
+      id: "dueDate",
+      placeholder: "期日",
+      inputType: "date"
+    },
+  ];
 
-  return <Card title="新しい貸し借り" contents={contents} />;
+  return <InputCard title="新しい記録" inputContents={contents} />;
 };
 
 export default Addtransactions;
