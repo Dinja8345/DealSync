@@ -3,6 +3,7 @@ export type outputContent = {
     name: string,
     money: string,
     dueDate: string,
+    id: string
 }
 
 export type input = {
