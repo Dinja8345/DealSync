@@ -25,6 +25,12 @@ const Addtransactions = () => {
       inputType: "number",
     },
     {
+      name: "メモ",
+      id: "memo",
+      placeholder: "任意",
+      inputType: "text",
+    },
+    {
       name: "期日",
       id: "dueDate",
       placeholder: "期日",

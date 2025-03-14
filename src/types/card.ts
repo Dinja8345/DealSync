@@ -3,8 +3,12 @@ export type outputContent = {
     name: string,
     money: string,
     dueDate: string,
+    memo: string,
+    status: tranStatus,
     id: string
 }
+
+export type tranStatus = "未返済" | "返済済み";
 
 export type input = {
     name: string,

@@ -17,6 +17,8 @@ const OutputCard = ({ contents }: { contents: outputContent[] }) => {
               <div className={titleClass}>{content.name}-{content.format}</div>
               <div className={textClass}>金額: \{content.money}</div>
               <div className={textClass}>期日: {content.dueDate}</div>
+              <div className={textClass}>メモ: {content.memo}</div>
+              <div className={textClass}>:返済ステータス: {content.status}</div>
             </div>
           </div>
         );
