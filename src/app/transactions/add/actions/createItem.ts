@@ -2,7 +2,7 @@
 import crypto from "crypto";
 import axios from "axios";
 
-import { ENDPOINT } from "@/constants";
+import { CARDS_ENDPOINT } from "@/constants";
 
 import type { tranStatus ,cardMsg, outputContent } from "@/types/card";
 
@@ -23,7 +23,7 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
   }
 
   try {
-    const res = await axios.post(ENDPOINT, newContent, {
+    const res = await axios.post(CARDS_ENDPOINT, newContent, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -36,4 +36,4 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
   }
 }
 
-export default createItem
+export default createItem;

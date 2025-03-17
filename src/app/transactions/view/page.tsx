@@ -1,7 +1,9 @@
-import ViewTransactions from '@/components/ViewTransactions';
+import ViewTransactions from "@/app/transactions/view/components/ViewTransactions";
 
 export default function Home() {
-    return (
-        <ViewTransactions />
-    );
-}  
+  return (
+    <>
+      <ViewTransactions />
+    </>
+  );
+}

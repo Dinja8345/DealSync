@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-import { ENDPOINT } from '@/constants';
+import { CARDS_ENDPOINT } from '@/constants';
 
 import type { outputContent } from '@/types/card';
 
 const getCardInfo = async() => {
-  const originDatasPromiss = await axios.get(ENDPOINT);
+  const originDatasPromiss = await axios.get(CARDS_ENDPOINT);
   const datas : outputContent[] = [];
   originDatasPromiss.data.map((data : any) => {
     const newData : outputContent = {

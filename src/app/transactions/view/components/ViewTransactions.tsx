@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 import OutputCard from '@/components/OutputCard';
-import getCardInfo from '@/app/transactions/view/api/card';
+import getCardInfo from '@/app/transactions/view/api/getCardCardInfo';
 
 import type { outputContent } from "@/types/card";
 
@@ -14,7 +14,6 @@ const ViewTransactions = () => {
 		getCardInfo()
 		.then((data) => {
 			setContents(data);
-			console.log(data);
 		}).catch((err) => {
 			throw err;
 		})

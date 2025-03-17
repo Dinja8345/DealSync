@@ -10,30 +10,11 @@ export type outputContent = {
 
 export type tranStatus = "未返済" | "返済済み";
 
-export type input = {
-    name: string,
-    id: string,
-    placeholder: string,
-    inputType: string
-}
-
-export type select = {
-    name: string,
-    id: string,
-    options: string[]
-}
-
-export type inputContent = input | select
-
-export type inputCardProps = {
-    title: string,
-    inputContents: inputContent[]
+export type buttonProps = {
+    text?: string
 }
 
 export type cardMsg = {
     msg: string
 }
 
-export function isInput(item: inputContent): item is input {
-    return "inputType" in item;
-}
