@@ -4,6 +4,7 @@ export type newUser = {
     sex: sexTypes,
     email: string,
     password: string
+    id: string
 }
 
 export type userMsg = {

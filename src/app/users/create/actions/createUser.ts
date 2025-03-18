@@ -1,4 +1,8 @@
+"use server";
+
 import axios from 'axios';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
 import { USERS_ENDPOINT } from '@/constants';
 
@@ -10,6 +14,7 @@ export default async function createUser(state: any, formData: FormData){
     const sex = formData.get("sex") as sexTypes;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const id: string = crypto.randomUUID();
 
     if(familyName === ""){
       return { msg: "姓が未入力です"};
@@ -27,7 +32,11 @@ export default async function createUser(state: any, formData: FormData){
       return { msg: "パスワードは32字以下である必要があります"};
     }
 
-    const newUser: newUser = {familyName, firstName, sex, email, password};
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPass = await bcrypt.hash(password, salt);
+
+    const newUser: newUser = {familyName, firstName, sex, email, password: hashedPass, id};
     
     try {
         const res = await axios.post(USERS_ENDPOINT, newUser, {

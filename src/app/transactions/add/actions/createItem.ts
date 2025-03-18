@@ -15,7 +15,6 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
   const memo: string  = formData.get("memo") as string;
   const id: string = crypto.randomUUID();
 
-  console.log(formData);
 	const newContent: outputContent = { format, name, money, dueDate, status, memo, id };
   
 	if (name === "" || money === "" || dueDate === "") {
