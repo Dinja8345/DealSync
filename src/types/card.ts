@@ -5,7 +5,6 @@ export type outputContent = {
     dueDate: string,
     memo: string,
     status: tranStatus,
-    id: string
 }
 
 export type tranStatus = "未返済" | "返済済み";

@@ -1,10 +1,8 @@
 "use server";
-import crypto from "crypto";
-import axios from "axios";
 
-import { CARDS_ENDPOINT } from "@/constants";
-
+import Transaction from "@/models/Transaction";
 import type { tranStatus ,cardMsg, outputContent } from "@/types/card";
+import { connectDB } from "@/lib/mongodb";
 
 export async function createItem(state:cardMsg, formData: FormData) : Promise<cardMsg> {
   const format: string = formData.get("format") as string;
@@ -13,21 +11,22 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
   const dueDate: string  = formData.get("dueDate") as string;
   const status: tranStatus = "未返済";
   const memo: string  = formData.get("memo") as string;
-  const id: string = crypto.randomUUID();
-
-	const newContent: outputContent = { format, name, money, dueDate, status, memo, id };
   
 	if (name === "" || money === "" || dueDate === "") {
     return { msg: "入力フィールドが空のところがあります。" };
   }
 
   try {
-    const res = await axios.post(CARDS_ENDPOINT, newContent, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    await connectDB();
+		const newContent = new Transaction({
+      format,
+      name,
+      money,
+      dueDate,
+      status,
+      memo
     });
-		console.log(res.data);
+    await newContent.save();
 		return { msg: "登録に成功しました" }
   } catch (e) {
     console.error(e);
