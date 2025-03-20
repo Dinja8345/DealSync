@@ -1,25 +1,22 @@
-import axios from 'axios';
+"use server"
 
-import { CARDS_ENDPOINT } from '@/constants';
-
-import type { outputContent } from '@/types/card';
+import connectDB from "@/lib/mongodb";
+import Transaction from "@/models/Transaction";
 
 const getCardInfo = async() => {
-  const originDatasPromiss = await axios.get(CARDS_ENDPOINT);
-  const datas : outputContent[] = [];
-  originDatasPromiss.data.map((data : any) => {
-    const newData : outputContent = {
-      format: data.format,
-      name: data.name,
-      money: data.money,
-      status: "未返済",
-      dueDate: data.dueDate,
-      memo: data.memo,
-      id: data.id,
-    }
-    datas.push(newData);
-  })
-  return datas;
+  try{
+    await connectDB();
+    const transactions = await Transaction.find({}).lean();
+
+    const plainTransactions = transactions.map((doc: { _id: any }) => ({
+      ...doc,
+      _id: doc._id.toString()
+    }))
+    return plainTransactions;
+  }catch(e){
+    console.error(e);
+    return [];
+  }
 }
 
 export default getCardInfo;

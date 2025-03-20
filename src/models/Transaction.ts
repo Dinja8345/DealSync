@@ -1,4 +1,6 @@
-import { Schema, model, models } from "mongoose";
+"use server"
+
+import { Schema, model, models, Model } from "mongoose";
 
 const transactionSchema = new Schema({
   format: { type: String, required: true, enum: ["貸し", "借り"] },
@@ -9,6 +11,6 @@ const transactionSchema = new Schema({
   memo: { type: String, required: false }
 });
 
-const Transaction = models.Transaction || model('Transaction', transactionSchema);
+const Transaction: Model<any> = models?.Transaction || model('Transaction', transactionSchema);
 
 export default Transaction;

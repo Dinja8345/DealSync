@@ -10,7 +10,7 @@ const OutputCard = ({ contents }: { contents: outputContent[] }) => {
     <>
       {contents.map((content) => {
         return (
-          <div className={cardClass} key={content.id}>
+          <div className={cardClass} key={content._id}>
             <div className={contentsClass}>
               <div className={titleClass}>
                 {content.name}-{content.format}

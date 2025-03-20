@@ -1,35 +1,20 @@
+"use server"
+
 import mongoose from "mongoose";
 
-const MONGODB_URL = process.env.DB_URL;
-
-if(!MONGODB_URL){
-    throw new Error("MONGODB_URL is not defined");
-}
-
-declare global {
-    var mongooseConnection: mongoose.Connection | undefined;
-}
-
 export const connectDB = async() => {
-    if(global.mongooseConnection){
-        console.log("Using existing MongoDB connection");
-        return global.mongooseConnection;
+    try{
+        const URL = process.env.DB_URL as string;
+        console.log(mongoose);
+        await mongoose.connect(URL,
+            {
+                sanitizeFilter: true
+            }
+        );
+    }catch(err){
+        console.error(err);
+        throw new Error();
     }
+};
 
-    console.log("Connecting to MongoDB...");
-    await mongoose.connect(MONGODB_URL, {
-        dbName: "DebtSync", 
-    });
-
-    global.mongooseConnection = mongoose.connection;
-
-    global.mongooseConnection.on("connected", () => {
-        console.log("Mongo connected");
-    });
-
-    global.mongooseConnection.on("error", (err) => {
-        console.error("MongoDB connectoin eeror:", err);
-    });
-
-    return global.mongooseConnection;
-}
+export default connectDB;
