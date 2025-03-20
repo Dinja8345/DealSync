@@ -1,51 +1,49 @@
 "use server";
 
-import axios from 'axios';
-import crypto from 'crypto';
+import hashPassword from "@/app/users/api/hashPassword";
+import User from "@/models/User";
+import { connectDB } from "@/lib/mongodb";
 
-import hashPassword from '@/app/users/api/hashPassword';
-import { USERS_ENDPOINT } from '@/constants';
+import type { sexTypes } from "@/types/user";
 
-import type { newUser, sexTypes } from '@/types/user';
+export default async function createUser(state: any, formData: FormData) {
+  const familyName = formData.get("familyName") as string;
+  const firstName = formData.get("firstName") as string;
+  const sex = formData.get("sex") as sexTypes;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-export default async function createUser(state: any, formData: FormData){
-    const familyName = formData.get("familyName") as string;
-    const firstName = formData.get("firstName") as string;
-    const sex = formData.get("sex") as sexTypes;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const id: string = crypto.randomUUID();
+  if (familyName === "") {
+    return { msg: "姓が未入力です" };
+  } else if (firstName === "") {
+    return { msg: "名が未入力です" };
+  } else if (email === "") {
+    return { msg: "メールアドレスが未入力です" };
+  } else if (password === "") {
+    return { msg: "パスワードが未入力です" };
+  }
 
-    if(familyName === ""){
-      return { msg: "姓が未入力です"};
-    }else if(firstName === ""){
-      return { msg: "名が未入力です"};
-    }else if(email === ""){
-      return { msg: "メールアドレスが未入力です"};
-    }else if(password === ""){
-      return { msg: "パスワードが未入力です"};
-    }
+  if (password.length < 5) {
+    return { msg: "パスワードは5字以上である必要があります" };
+  } else if (password.length > 32) {
+    return { msg: "パスワードは32字以下である必要があります" };
+  }
 
-    if(password.length < 5){
-      return { msg: "パスワードは5字以上である必要があります"};
-    }else if(password.length > 32){
-      return { msg: "パスワードは32字以下である必要があります"};
-    }
+  const hashedPass = await hashPassword(password);
 
-    const hashedPass = await hashPassword(password);
-
-    const newUser: newUser = {familyName, firstName, sex, email, password: hashedPass, id};
-    
-    try {
-        const res = await axios.post(USERS_ENDPOINT, newUser, {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        });
-            console.log(res.data);
-            return { msg: "登録に成功しました" }
-      } catch (e) {
-        console.error(e);
-        return { msg: "登録に失敗しました" };
-      }
+  try {    
+    await connectDB();
+    const newUser = new User({
+      familyName,
+      firstName,
+      sex,
+      email,
+      password: hashedPass
+    });
+    await newUser.save();
+    return { msg: "登録に成功しました" };
+  } catch (e) {
+    console.error(e);
+    return { msg: "登録に失敗しました" };
+  }
 }
