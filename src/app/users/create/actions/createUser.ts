@@ -2,8 +2,8 @@
 
 import axios from 'axios';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
 
+import hashPassword from '@/app/users/api/hashPassword';
 import { USERS_ENDPOINT } from '@/constants';
 
 import type { newUser, sexTypes } from '@/types/user';
@@ -32,9 +32,7 @@ export default async function createUser(state: any, formData: FormData){
       return { msg: "パスワードは32字以下である必要があります"};
     }
 
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPass = await bcrypt.hash(password, salt);
+    const hashedPass = await hashPassword(password);
 
     const newUser: newUser = {familyName, firstName, sex, email, password: hashedPass, id};
     

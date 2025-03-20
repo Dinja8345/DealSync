@@ -75,20 +75,12 @@
   ],
   "users": [
     {
-      "id": "70910a4d-a1d6-4ea3-acd8-5b85e101fa90",
-      "familyName": "浅野",
-      "firstName": "勇翔",
+      "id": "b41e3a0b-876c-4c36-8cdc-0cb9fdad345e",
+      "familyName": "Asano",
+      "firstName": "Yuto",
       "sex": "男性",
       "email": "pocchi8345@gmail.com",
-      "password": "Asano0628"
-    },
-    {
-      "id": "e9210b54-d024-4b51-8446-874e4d54cb70",
-      "familyName": "浅野",
-      "firstName": "勇翔",
-      "sex": "男性",
-      "email": "exp@exp.com",
-      "password": "$2b$10$.GY4G3ZreautBxkxlBwiluiek/SXV0wfeaQaqIdiA35Mn4UhHixMm"
+      "password": "$2b$12$yjzCMOAB86Y7VzZnmdUSW.3whhqJ3FFJ5HGWWyYS2cxo4snc6L.R."
     }
   ]
 }

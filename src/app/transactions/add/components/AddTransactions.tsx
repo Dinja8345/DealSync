@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from 'react';
+import { useState, useActionState } from 'react';
 
 import InputCard from "@/components/InputCard";
 
@@ -10,6 +10,10 @@ import { inputContent } from "@/types/form";
 import type { cardMsg } from "@/types/card";
 
 const Addtransactions = () => {
+  const [name, setName] = useState("");
+  const [money, setMoney] = useState("");
+  const [memo, setMemo] = useState("");
+
   const [state, createItemAction] = useActionState<cardMsg, any>(createItem, {
     msg: "",
   });
@@ -25,18 +29,30 @@ const Addtransactions = () => {
       id: "name",
       placeholder: "相手の名前",
       inputType: "text",
+      state: {
+        value: name,
+        setValue: setName
+      }
     },
     {
       name: "金額",
       id: "money",
       placeholder: "\\",
       inputType: "number",
+      state: {
+        value: money,
+        setValue: setMoney
+      }
     },
     {
       name: "メモ",
       id: "memo",
       placeholder: "任意",
       inputType: "text",
+      state: {
+        value: memo,
+        setValue: setMemo
+      }
     },
     {
       name: "期日",

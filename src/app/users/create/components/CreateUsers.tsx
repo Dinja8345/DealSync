@@ -18,7 +18,7 @@ const CreateUsers = () => {
   
   const [familyName, setFamilyName] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
-  const [sex, setSex] = useState<sexTypes>("男性");
+  //const [sex, setSex] = useState<sexTypes>("男性");
   const [email, setEmail] = useState<string>("");
 
   const contents: inputContent[] = [
@@ -46,10 +46,10 @@ const CreateUsers = () => {
       name: "性別",
       id: "sex",
       options: ["男性","女性","その他"],
-      state: {
-        value: sex,
-        setValue: setSex
-      }
+      // state: {
+      //   value: sex,
+      //   setValue: setSex
+      // }
     },
     {
       name: "メールアドレス",

@@ -20,7 +20,6 @@ export type input = {
     state?: state<string>
 }
 
-
 export type select<T> = {
     name: string,
     id: string,

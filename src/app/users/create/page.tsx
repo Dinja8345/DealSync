@@ -5,6 +5,7 @@ export default function Home() {
     <>
       <p>アカウント作成画面</p>
       <CreateUsers />
+      <a href="login">ログインページ</a>
     </>
   );
 }
