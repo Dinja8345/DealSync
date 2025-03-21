@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
 import { getIronSession, IronSessionData } from 'iron-session';
 import { NextResponse } from 'next/server';
+import crypto from "crypto";
 
 declare module 'iron-session' {
   interface IronSessionData {
-    username?: string;
-    email?: string;
+    sid: string
   }
 }
 
@@ -45,9 +45,12 @@ export async function POST(req: Request) {
             sameSite: "lax"
         }
     });
-    session.email = email;
+
+    session.sid = crypto.randomBytes(32).toString("hex");
 
     await session.save()
+
+    
 
     return NextResponse.json({
         message: "Session saved",
