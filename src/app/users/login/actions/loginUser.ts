@@ -1,6 +1,7 @@
 "use server"
 
 import connectDB from '@/lib/mongodb';
+import axios from 'axios';
 import User from '@/models/User';
 import verifyPassword from '@/app/users/api/verifyPassword';
 
@@ -17,6 +18,9 @@ export default async function loginUser(state: any, formData: FormData){
     
         const isMatch: boolean = await verifyPassword(inputedPass,storedPass);
         if(isMatch){
+            const data = { email };
+            const res = await axios.get("http://localhost:3000/api/session");
+            console.log(res.data);
             return { msg: "ログインに成功" };
         }else{
             return { msg: "メールアドレスまたはパスワードが一致していません" };
