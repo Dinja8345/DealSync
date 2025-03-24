@@ -2,10 +2,13 @@
 
 import crypto from "crypto";
 import axios from "axios";
+import { cookies } from "next/headers";
 
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import verifyPassword from "@/app/users/api/verifyPassword";
+
+
 
 export default async function loginUser(state: any, formData: FormData) {
   try {
@@ -21,9 +24,16 @@ export default async function loginUser(state: any, formData: FormData) {
     const isMatch: boolean = await verifyPassword(inputedPass, storedPass);
     if (isMatch) {
       const sid = crypto.randomBytes(32).toString("hex");
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/session`, { sid });
+      (await cookies()).set('sid',sid,{
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 24時間
+        path: "/"
+      });
+
       const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, email });
-      //console.log(res.data);
+      
       return { msg: "ログインに成功" };
     } else {
       return { msg: "メールアドレスまたはパスワードが一致していません" };
