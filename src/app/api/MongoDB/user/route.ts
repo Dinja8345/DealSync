@@ -26,15 +26,16 @@ export async function GET(req: Request){
 export async function POST(req: Request){
     try{
         const body = await req.json();
-        const { familyName, firstName, sex, email, password } = body;
-        if(!familyName || !firstName || !sex || !email || !password) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        const { familyName, firstName, sex, email, password, id } = body;
+        if(!familyName || !firstName || !sex || !email || !password || !id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         await connectDB();
         const newUser = new User({
             familyName,
             firstName,
             sex,
             email,
-            password
+            password,
+            id
         });
         await newUser.save();
         return NextResponse.json({ 

@@ -20,8 +20,35 @@ const CreateUsers = () => {
   const [firstName, setFirstName] = useState<string>("");
   //const [sex, setSex] = useState<sexTypes>("男性");
   const [email, setEmail] = useState<string>("");
+  const [id, setId] = useState<string>("");
 
   const contents: inputContent[] = [
+    {
+      name: "ID",
+      id: "id",
+      placeholder: "他のユーザーと重複不可能",
+      inputType: "text",
+      state: {
+        value: id,
+        setValue: setId
+      }
+    },
+    {
+      name: "メールアドレス",
+      id: "email",
+      placeholder: "example@exp.com",
+      inputType: "email",
+      state: {
+        value: email,
+        setValue: setEmail  
+      }
+    },
+    {
+      name: "パスワード",
+      id: "password",
+      placeholder: "5字以上32字以下",
+      inputType: "password"
+    },
     {
       name: "姓",
       id: "familyName",
@@ -50,22 +77,6 @@ const CreateUsers = () => {
       //   value: sex,
       //   setValue: setSex
       // }
-    },
-    {
-      name: "メールアドレス",
-      id: "email",
-      placeholder: "example@exp.com",
-      inputType: "email",
-      state: {
-        value: email,
-        setValue: setEmail  
-      }
-    },
-    {
-      name: "パスワード",
-      id: "password",
-      placeholder: "5字以上32字以下",
-      inputType: "password"
     }
   ];
 

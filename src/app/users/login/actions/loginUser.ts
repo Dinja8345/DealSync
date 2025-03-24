@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
-import verifyPassword from "@/app/users/api/verifyPassword";
+import verifyPassword from "@/app/users/login/actions/verifyPassword";
 
 
 
