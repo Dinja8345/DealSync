@@ -1,0 +1,48 @@
+import { NextResponse } from "next/server";
+
+import { connectDB } from "@/lib/mongodb";
+import User from "@/models/User";
+
+export async function GET(req: Request){
+    try{
+        const headers = await req.headers;
+        const email = headers.get("email");
+        if(!email) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        await connectDB();
+        const user = await User.findOne({ email: email });
+        if(!user){
+            return NextResponse.json({ error: "This email is invalid" }, { status: 400 });
+        }else{
+            return NextResponse.json({ 
+                message: "Get user",
+                user: user
+            });
+        }
+    }catch(e){
+        return NextResponse.json({ error: "Error" }, { status: 500 });
+    }
+}
+
+export async function POST(req: Request){
+    try{
+        const body = await req.json();
+        const { familyName, firstName, sex, email, password } = body;
+        if(!familyName || !firstName || !sex || !email || !password) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        await connectDB();
+        const newUser = new User({
+            familyName,
+            firstName,
+            sex,
+            email,
+            password
+        });
+        await newUser.save();
+        return NextResponse.json({ 
+            message: "user saved",
+            newUser
+        });
+    }catch(e){
+        console.error(e);
+        return NextResponse.json({ error: "Error" }, { status: 500 });
+    }
+}
