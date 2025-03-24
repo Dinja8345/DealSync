@@ -1,8 +1,9 @@
 "use server";
 
+import axios from "axios";
+import crypto from "crypto";
+import { cookies } from "next/headers";
 import hashPassword from "@/app/users/api/hashPassword";
-import User from "@/models/User";
-import { connectDB } from "@/lib/mongodb";
 
 import type { sexTypes } from "@/types/user";
 
@@ -32,15 +33,19 @@ export default async function createUser(state: any, formData: FormData) {
   const hashedPass = await hashPassword(password);
 
   try {    
-    await connectDB();
-    const newUser = new User({
-      familyName,
-      firstName,
-      sex,
-      email,
-      password: hashedPass
-    });
-    await newUser.save();
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, { familyName, firstName, sex, email, password: hashedPass });
+    
+    const sid = crypto.randomBytes(32).toString("hex");
+      (await cookies()).set('sid',sid,{
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 24時間
+        path: "/"
+      });
+
+    const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, email });
+
     return { msg: "登録に成功しました" };
   } catch (e) {
     console.error(e);

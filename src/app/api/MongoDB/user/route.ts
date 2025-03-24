@@ -26,15 +26,14 @@ export async function GET(req: Request){
 export async function POST(req: Request){
     try{
         const body = await req.json();
-        const { familyName, firstName, sex, email, id, password } = body;
-        if(!familyName || !firstName || !sex || !email || !id || !password) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        const { familyName, firstName, sex, email, password } = body;
+        if(!familyName || !firstName || !sex || !email || !password) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         await connectDB();
         const newUser = new User({
             familyName,
             firstName,
             sex,
             email,
-            id,
             password
         });
         await newUser.save();
@@ -43,6 +42,7 @@ export async function POST(req: Request){
             newUser
         });
     }catch(e){
+        console.error(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
     }
 }
