@@ -9,19 +9,20 @@ export async function GET(req: Request){
         const sid = headers.get("sid");
 
         if(!sid) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
-        
         await connectDB();
         const sessionStore = await SessionStore.findOne({ sid: sid });
         
         if(!sessionStore){
-            return NextResponse.json({ error: "This sid is invalid" }, { status: 400 });
+            console.log("a");
+            return NextResponse.json({ erroru7iu7: "This sid is invalid" }, { status: 400 });
         }else{
             return NextResponse.json({ 
-                message: "Get email",
-                email: sessionStore.email
+                message: "Get id",
+                id: sessionStore.id
             });
         }
     }catch(e){
+        console.error(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
     }
 }
@@ -29,11 +30,11 @@ export async function GET(req: Request){
 export async function POST(req: Request){
     try{
         const body = await req.json();
-        const { email, sid } = body;
-        if(!email || !sid) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        const { id, sid } = body;
+        if(!id || !sid) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         await connectDB();
         const newSessionStore = new SessionStore({
-            email,
+            id,
             sid
         });
         await newSessionStore.save();
@@ -42,6 +43,7 @@ export async function POST(req: Request){
             newSessionStore
         })
     }catch(e){
+        console.error(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
     }
 }

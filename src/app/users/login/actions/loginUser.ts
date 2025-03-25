@@ -13,9 +13,9 @@ import verifyPassword from "@/app/users/login/actions/verifyPassword";
 export default async function loginUser(state: any, formData: FormData) {
   try {
     await connectDB();
-    const email = formData.get("email") as string;
+    const id = formData.get("id") as string;
     const inputedPass = formData.get("password") as string;
-    const storedUsers = await User.findOne({ email: email });
+    const storedUsers = await User.findOne({ id: id });
     if (!storedUsers) {
       return { msg: "そのメールアドレスは登録されていません" };
     }
@@ -32,7 +32,7 @@ export default async function loginUser(state: any, formData: FormData) {
         path: "/"
       });
 
-      const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, email });
+      const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
       
       return { msg: "ログインに成功" };
     } else {

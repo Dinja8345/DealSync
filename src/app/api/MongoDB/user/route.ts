@@ -6,10 +6,10 @@ import User from "@/models/User";
 export async function GET(req: Request){
     try{
         const headers = await req.headers;
-        const email = headers.get("email");
-        if(!email) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        const id = headers.get("id");
+        if(!id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         await connectDB();
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ id: id });
         if(!user){
             return NextResponse.json({ error: "This email is invalid" }, { status: 400 });
         }else{

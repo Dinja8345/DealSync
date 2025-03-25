@@ -47,7 +47,7 @@ export default async function createUser(state: any, formData: FormData) {
         path: "/"
       });
 
-    const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, email });
+    const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
 
     return { msg: "登録に成功しました" };
   } catch (e) {

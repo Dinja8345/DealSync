@@ -20,20 +20,18 @@ export async function middleware(req: NextRequest) {
       }
     );
 
-    const email = sessionDbData.data.email;
+    const id = sessionDbData.data.id;
 
-    if (!email) {
+    if (!id) {
       return NextResponse.next();
     }
-
-    console.log(email);
-
+    
     const userDbData = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
       {
         headers: {
           "Content-Type": "application/json",
-          "email": email,
+          "id": id,
         },
       }
     );
