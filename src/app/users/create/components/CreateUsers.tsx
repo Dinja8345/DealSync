@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useActionState } from 'react';
+import { useState, useActionState } from 'react';
 
 import Form from "@/components/Form";
 
-import createUser from '@/app/users/create/actions/createUser';
+import { createUser } from '@/lib/actions/userActions';
 
 import type { inputContent } from "@/types/form";
-import type { userMsg, sexTypes } from "@/types/user";
+import type { userMsg } from "@/types/user";
 
 const CreateUsers = () => {
   const [state, createUserAction, isPending] = useActionState<userMsg, any>(createUser,

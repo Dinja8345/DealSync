@@ -1,10 +1,29 @@
-"use server";
+"use server"
 
+import connectDB from "@/lib/mongodb";
 import Deal from "@/models/Deal";
-import type { tranStatus ,cardMsg, outputContent } from "@/types/card";
-import { connectDB } from "@/lib/mongodb";
 
-export async function createItem(state:cardMsg, formData: FormData) : Promise<cardMsg> {
+import type { tranStatus ,cardMsg } from "@/types/card";
+
+const getCardInfo = async() => {
+  try{
+    await connectDB();
+    const deals = await Deal.find({}).lean();
+
+    const plainDeals = deals.map((doc: { _id: any }) => ({
+      ...doc,
+      _id: doc._id.toString()
+    }))
+    return plainDeals;
+  }catch(e){
+    console.error(e);
+    return [];
+  }
+}
+
+
+
+const createItem = async(state:cardMsg, formData: FormData) : Promise<cardMsg> => {
   const format: string = formData.get("format") as string;
   const name : string = formData.get("name") as string;
   const money: string = formData.get("money") as string;
@@ -34,4 +53,5 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
   }
 }
 
-export default createItem;
+
+export { getCardInfo, createItem };

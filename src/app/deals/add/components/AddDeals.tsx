@@ -4,7 +4,7 @@ import { useState, useActionState } from 'react';
 
 import InputCard from "@/components/InputCard";
 
-import createItem from "@/app/deals/add/actions/createItem";
+import { createItem } from "@/lib/actions/dealActions";
 import { inputContent } from "@/types/form";
 
 import type { cardMsg } from "@/types/card";
@@ -68,7 +68,7 @@ const Addtransactions = () => {
         <InputCard title="新しい記録" inputContents={contents} state={state} action={createItemAction}/>
       </div>
       <div className="flex justify-center pt-3">
-        <a href="/transactions/view">一覧へ</a>
+        <a href="/deals/view">一覧へ</a>
       </div>
     </div>
   );

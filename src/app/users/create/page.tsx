@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import getUserInfo from '@/lib/getUserInfo';
+import { getUserInfo } from '@/lib/actions/userActions';
 import CreateUsers from '@/app/users/create/components/CreateUsers';
 
 export default function Home() {

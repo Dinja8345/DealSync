@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 
-import getUserInfo from "@/lib/getUserInfo";
+import { getUserInfo } from "@/lib/actions/userActions";
 import OutputCard from '@/components/OutputCard';
 
 import type { outputContent } from "@/types/card";
 
-const ViewTransactions = () => {
+const ViewDeals = () => {
 	const [ contents, setContents ] = useState<outputContent[]>([]);
 	
 	useEffect(() => {
@@ -21,4 +21,4 @@ const ViewTransactions = () => {
 	)
 }
 
-export default ViewTransactions;
+export default ViewDeals;
