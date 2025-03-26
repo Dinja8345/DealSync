@@ -13,8 +13,7 @@ export async function GET(req: Request){
         const sessionStore = await SessionStore.findOne({ sid: sid });
         
         if(!sessionStore){
-            console.log("a");
-            return NextResponse.json({ erroru7iu7: "This sid is invalid" }, { status: 400 });
+            return NextResponse.json({ error: "This sid is invalid" }, { status: 400 });
         }else{
             return NextResponse.json({ 
                 message: "Get id",

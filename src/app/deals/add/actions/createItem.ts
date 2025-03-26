@@ -1,6 +1,6 @@
 "use server";
 
-import Transaction from "@/models/Transaction";
+import Deal from "@/models/Deal";
 import type { tranStatus ,cardMsg, outputContent } from "@/types/card";
 import { connectDB } from "@/lib/mongodb";
 
@@ -18,7 +18,7 @@ export async function createItem(state:cardMsg, formData: FormData) : Promise<ca
 
   try {
     await connectDB();
-		const newContent = new Transaction({
+		const newContent = new Deal({
       format,
       name,
       money,

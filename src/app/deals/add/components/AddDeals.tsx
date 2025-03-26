@@ -4,7 +4,7 @@ import { useState, useActionState } from 'react';
 
 import InputCard from "@/components/InputCard";
 
-import createItem from "@/app/transactions/add/actions/createItem";
+import createItem from "@/app/deals/add/actions/createItem";
 import { inputContent } from "@/types/form";
 
 import type { cardMsg } from "@/types/card";

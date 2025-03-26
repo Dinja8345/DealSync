@@ -1,18 +1,18 @@
 "use server"
 
 import connectDB from "@/lib/mongodb";
-import Transaction from "@/models/Transaction";
+import Deal from "@/models/Deal";
 
 const getCardInfo = async() => {
   try{
     await connectDB();
-    const transactions = await Transaction.find({}).lean();
+    const deals = await Deal.find({}).lean();
 
-    const plainTransactions = transactions.map((doc: { _id: any }) => ({
+    const plainDeals = deals.map((doc: { _id: any }) => ({
       ...doc,
       _id: doc._id.toString()
     }))
-    return plainTransactions;
+    return plainDeals;
   }catch(e){
     console.error(e);
     return [];
