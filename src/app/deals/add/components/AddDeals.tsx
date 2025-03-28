@@ -22,6 +22,7 @@ const Addtransactions = () => {
   });
   
   useEffect(() => {
+
     if(format == "貸し"){
       setLenderId(user?.id as string);
       setBorrowerId("");
@@ -31,8 +32,7 @@ const Addtransactions = () => {
     }
   },[format]);
 
-
-  const contents: inputContent[] = [
+  const contents: inputContent[] = ([
     {
       name: "形態",
       id: "format",
@@ -102,7 +102,7 @@ const Addtransactions = () => {
       placeholder: "期日",
       inputType: "date",
     },
-  ];
+  ]);
 
   return (
     <div>

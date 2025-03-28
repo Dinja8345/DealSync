@@ -2,6 +2,7 @@ import type{ Dispatch, SetStateAction } from 'react';
 
 export type formProps = {
     title: string,
+    formClass?: string
     inputContents: inputContent[],
     state: any,
     action: any

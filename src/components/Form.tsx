@@ -6,10 +6,8 @@ import { isInput } from "@/types/form";
 import type { JSX } from "react";
 import type { formProps } from "@/types/form";
 
-const Form: React.FC<formProps> = ({ title, inputContents, state, action }) => {
+const Form: React.FC<formProps> = ({ title, formClass, inputContents, state, action }) => {
   
-  const formClass =
-    "";
   const titleClass = "text-black font-bold italic mb-2";
   const labelClass = "flex-1 text-black text-right pr-2";
   const inputClass =

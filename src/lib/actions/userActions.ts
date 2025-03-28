@@ -142,4 +142,9 @@ const loginUser = async(state: any, formData: FormData) => {
   }
 }
 
-export { getUserInfo, createUser, loginUser };
+
+const userLogout = async() => {
+  (await cookies()).delete('sid');
+}
+
+export { getUserInfo, createUser, loginUser, userLogout };
