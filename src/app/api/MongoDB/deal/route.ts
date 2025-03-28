@@ -13,14 +13,14 @@ export async function GET(req: Request){
         if(!id || !query) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         
         await connectDB();
-        const deals = await Deal.find(query);
+        const deals = await Deal.find(query).lean();
         
         if(!deals){
             return NextResponse.json({ error: "This sid is invalid" }, { status: 400 });
         }else{
             return NextResponse.json({ 
                 message: "Get deals",
-                id: deals
+                deals: deals
             });
         }
     }catch(e){

@@ -5,7 +5,6 @@ import crypto from "crypto";
 import connectDB from "@/lib/mongodb";
 import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
-import User from "@/models/User";
 import { cookies } from "next/headers";
 
 import type { sexTypes } from "@/types/user";
@@ -47,7 +46,6 @@ const getUserInfo = async () => {
   }
 
   return user;
-
 };
 
 
@@ -114,6 +112,7 @@ const loginUser = async(state: any, formData: FormData) => {
         "id": id
       },
     });
+    
     console.log(storedUser.data);
     if (!storedUser.data.user) {
       return { msg: "そのidは登録されていません" };

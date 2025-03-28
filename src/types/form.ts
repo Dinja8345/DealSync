@@ -12,12 +12,14 @@ type state<T> = {
     setValue: Dispatch<SetStateAction<T>>
 }
 
-export type input = {
+export type input<T> = {
     name: string,
     id: string,
-    placeholder: string,
+    placeholder?: string,
+    areaDisabled?: boolean,
+    readOnly?: boolean,
     inputType: string,
-    state?: state<string>
+    state?: state<T>
 }
 
 export type select<T> = {
@@ -27,8 +29,8 @@ export type select<T> = {
     state?: state<T>
 }
 
-export type inputContent = input | select<any>
+export type inputContent = input<any> | select<any>
 
-export function isInput(item: inputContent): item is input {
+export function isInput(item: inputContent): item is input<any> {
     return "inputType" in item;
 }

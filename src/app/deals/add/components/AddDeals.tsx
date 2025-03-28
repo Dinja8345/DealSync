@@ -1,28 +1,46 @@
 "use client"
 
-import { useState, useActionState } from 'react';
-
+import { useState, useEffect, useActionState } from 'react';
 import InputCard from "@/components/InputCard";
-
 import { createItem } from "@/lib/actions/dealActions";
 import { inputContent } from "@/types/form";
+import { useUser } from "@/context/UserContext";
 
-import type { cardMsg } from "@/types/card";
+import type { cardMsg, formats } from "@/types/card";
 
 const Addtransactions = () => {
+  const [format, setFormat] = useState<formats>("貸し");
   const [name, setName] = useState("");
   const [money, setMoney] = useState("");
   const [memo, setMemo] = useState("");
-
+  const [lenderId, setLenderId] = useState("");
+  const [borrowerId, setBorrowerId] = useState("");
+  const { user } = useUser();
+  
   const [state, createItemAction] = useActionState<cardMsg, any>(createItem, {
     msg: "",
   });
+  
+  useEffect(() => {
+    if(format == "貸し"){
+      setLenderId(user?.id as string);
+      setBorrowerId("");
+    }else if(format == "借り"){
+      setBorrowerId(user?.id as string);
+      setLenderId("");
+    }
+  },[format]);
+
 
   const contents: inputContent[] = [
     {
       name: "形態",
       id: "format",
-      options: ["借り", "貸し"],
+      options: ["貸し", "借り"],
+      state: {
+        value: format,
+        setValue: setFormat
+      }
     },
     {
       name: "名前",
@@ -55,6 +73,30 @@ const Addtransactions = () => {
       }
     },
     {
+      name: "貸す",
+      id: "lenderId",
+      placeholder: "貸す人のid(任意)",
+      inputType: "input",
+      areaDisabled: format === "貸し",
+      readOnly: format === "貸し",
+      state: {
+        value: lenderId,
+        setValue: setLenderId
+      }
+    },
+    {
+      name: "借りる",
+      id: "borrowerId",
+      placeholder: "借りる人のid(任意)",
+      inputType: "input",
+      areaDisabled: format === "借り",
+      readOnly: format === "借り",
+      state: {
+        value: borrowerId,
+        setValue: setBorrowerId
+      }
+    },
+    {
       name: "期日",
       id: "dueDate",
       placeholder: "期日",
@@ -64,7 +106,7 @@ const Addtransactions = () => {
 
   return (
     <div>
-      <div className="flex justify-center ">
+      <div className="flex justify-center">
         <InputCard title="新しい記録" inputContents={contents} state={state} action={createItemAction}/>
       </div>
       <div className="flex justify-center pt-3">

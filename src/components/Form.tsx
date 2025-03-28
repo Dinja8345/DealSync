@@ -39,6 +39,8 @@ const Form: React.FC<formProps> = ({ title, inputContents, state, action }) => {
                   id={content.id}
                   name={content.id}
                   placeholder={content.placeholder}
+                  aria-disabled={content.areaDisabled}
+                  readOnly={content.readOnly}
                   className={inputClass}
                   value={content.state.value}
                   onChange={(e) => {

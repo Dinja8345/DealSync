@@ -1,5 +1,5 @@
 export type outputContent = {
-    format: string,
+    format: formats,
     name: string,
     money: string,
     dueDate: string,
@@ -8,7 +8,6 @@ export type outputContent = {
     _id: string
 }
 
-export type tranStatus = "未返済" | "返済済み";
 
 export type buttonProps = {
     text?: string
@@ -18,3 +17,5 @@ export type cardMsg = {
     msg: string
 }
 
+export type tranStatus = "未返済" | "返済済み";
+export type formats =  "貸し" | "借り"

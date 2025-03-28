@@ -23,9 +23,6 @@ const OutputCard = ({ contents }: { contents: outputContent[] }) => {
           </div>
         );
       })}
-      <div className="flex justify-center pt-3 ">
-        <a href="/transactions/add">新規作成</a>
-      </div>
     </>
   );
 };
