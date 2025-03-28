@@ -9,13 +9,19 @@ import type { outputContent } from "@/types/card";
 
 const ViewDeals = () => {
   const [contents, setContents] = useState<outputContent[]>([]);
-
   useEffect(() => {
-    async () => {
+    const fetchData = async () => {
       const user = await getUserInfo();
       const deals = await getCardInfo(user.id);
       setContents(deals);
+      return deals
     };
+
+    fetchData()
+    .then((deals) => {
+      console.log(deals);
+    });
+
   }, []);
 
   return (

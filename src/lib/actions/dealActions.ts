@@ -5,17 +5,17 @@ import connectDB from "@/lib/mongodb";
 import Deal from "@/models/Deal";
 
 import type { tranStatus, cardMsg } from "@/types/card";
-import type { User } from "@/types/user";
 
 const getCardInfo = async(id: string) => {
   try{
-    const query = "{}";
+    const query = `{"$or": [{ "lenderId": "${id}" }, { "borrowerId": "${id}" }]}`;
     const dealsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`,{
       headers: {
         "Content-Type": "application/json",
+        "id": id,
         "query": query
       }
-    }); 
+    });
 
     const deals = dealsRes.data.deals;
 

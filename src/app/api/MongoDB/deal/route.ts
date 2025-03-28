@@ -9,7 +9,7 @@ export async function GET(req: Request){
         const headers = await req.headers;
         const id = headers.get("id");
         const query = JSON.parse(headers.get("query") as string);
-
+        console.log(id, query);
         if(!id || !query) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         
         await connectDB();
