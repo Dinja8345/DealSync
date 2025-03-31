@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import '@/app/globals.css';
 
 export const metadata: Metadata = {
-  title: "ユーザーログイン",
-  description: "ログインフォーム",
+  title: "テスト",
+  description: "開発用",
 };
 
 export default function RootLayout({

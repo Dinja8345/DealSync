@@ -8,11 +8,6 @@ export type outputContent = {
     _id: string
 }
 
-
-export type buttonProps = {
-    text?: string
-}
-
 export type cardMsg = {
     msg: string
 }
