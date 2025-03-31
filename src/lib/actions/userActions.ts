@@ -12,6 +12,10 @@ import type { sexTypes } from "@/types/user";
 const getUserInfo = async () => {
   const cookieStore = await cookies();
   const sid = cookieStore.get("sid");
+  
+  if(!sid){
+    return null;
+  }
 
   const sessionDbData = await axios.get(
     `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
@@ -48,9 +52,12 @@ const getUserInfo = async () => {
   return user;
 };
 
+interface userMsg {
+  msg: string,
+  success: boolean
+}
 
-
-const createUser = async(state: any, formData: FormData) => {
+const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
   const familyName = formData.get("familyName") as string;
   const firstName = formData.get("firstName") as string;
   const sex = formData.get("sex") as sexTypes;
@@ -59,21 +66,21 @@ const createUser = async(state: any, formData: FormData) => {
   const id = formData.get("id") as string;
 
   if (familyName === "") {
-    return { msg: "姓が未入力です" };
+    return { msg: "姓が未入力です", success: false };
   } else if (firstName === "") {
-    return { msg: "名が未入力です" };
+    return { msg: "名が未入力です", success: false };
   } else if (email === "") {
-    return { msg: "メールアドレスが未入力です" };
+    return { msg: "メールアドレスが未入力です", success: false };
   } else if (password === "") {
-    return { msg: "パスワードが未入力です" };
+    return { msg: "パスワードが未入力です", success: false };
   } else if (id === ""){
-    return { msg: "idが未入力です" };
+    return { msg: "idが未入力です", success: false };
   }
 
   if (password.length < 5) {
-    return { msg: "パスワードは5字以上である必要があります" };
+    return { msg: "パスワードは5字以上である必要があります", success: false };
   } else if (password.length > 32) {
-    return { msg: "パスワードは32字以下である必要があります" };
+    return { msg: "パスワードは32字以下である必要があります", success: false };
   }
 
   const hashedPass = await hashPassword(password);
@@ -91,17 +98,17 @@ const createUser = async(state: any, formData: FormData) => {
       });
 
     const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
-
-    return { msg: "登録に成功しました" };
+    return { msg: "登録に成功", success: true };
   } catch (e) {
     console.error(e);
-    return { msg: "登録に失敗しました" };
+    return { msg: "登録に失敗しました", success: false };
   }
+
 }
 
 
 
-const loginUser = async(state: any, formData: FormData) => {
+const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
   try {
     await connectDB();
     const id = formData.get("id") as string;
@@ -115,7 +122,7 @@ const loginUser = async(state: any, formData: FormData) => {
     
     console.log(storedUser.data);
     if (!storedUser.data.user) {
-      return { msg: "そのidは登録されていません" };
+      return { msg: "そのidは登録されていません", success: false };
     }
     const storedPass = storedUser.data.user.password;
 
@@ -132,14 +139,16 @@ const loginUser = async(state: any, formData: FormData) => {
 
       const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
       
-      return { msg: "ログインに成功" };
     } else {
-      return { msg: "idまたはパスワードが一致していません" };
+      return { msg: "idまたはパスワードが一致していません", success: false };
     }
   } catch (e) {
     console.error(e);
-    return { msg: "ログイン中にエラーが発生しました。" };
+    return { msg: "ログイン中にエラーが発生しました。", success: false };
   }
+
+  return { msg: "ログイン完了", success: true };
+
 }
 
 
@@ -148,3 +157,5 @@ const userLogout = async() => {
 }
 
 export { getUserInfo, createUser, loginUser, userLogout };
+export type { userMsg };
+

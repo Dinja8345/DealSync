@@ -1,17 +1,24 @@
 "use client"
 
-import { useState, useActionState } from "react";
-
-import { loginUser } from "@/lib/actions/userActions";
 import Form from "@/components/Form";
-
+import { useState, useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { loginUser } from "@/lib/actions/userActions";
 import type { inputContent } from "@/types/form";
-import type { userMsg } from "@/types/user";
+import type { userMsg } from "@/lib/actions/userActions";
 
 const UserLogin = () => {
   const [id, setId] = useState<string>("");
-	const [loginMsg, loginAction] = useActionState<userMsg,FormData>(loginUser,{ msg: "" });
-
+  const router = useRouter();
+  
+  const handleSubmit = async(state: any, formData: FormData): Promise<userMsg> =>{
+    const result = await loginUser(state, formData);
+    if(result.success) router.push("/deals/view");
+    return result;
+  }
+  
+  const [loginMsg, loginAction] = useActionState<userMsg,FormData>(handleSubmit,{ msg: "", success: false });
+  
   const inputContents: inputContent[] = [
     {
       name: "id",

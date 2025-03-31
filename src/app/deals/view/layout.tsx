@@ -14,11 +14,5 @@ export default async function RootLayout({
 }>) {
   const user = await getUserInfo();
 
-  return (
-    <html lang="ja">
-      <body>
-        <UserProvider>{children}</UserProvider>
-      </body>
-    </html>
-  );
+  return <UserProvider initUser={user}>{children}</UserProvider>
 }

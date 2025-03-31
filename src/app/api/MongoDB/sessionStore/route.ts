@@ -8,11 +8,16 @@ export async function GET(req: Request){
         const headers = await req.headers;
         const sid = headers.get("sid");
 
-        if(!sid) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        if(!sid){
+            console.log("headersの中にsidが含まれていません");
+            return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        }
+            
         await connectDB();
         const sessionStore = await SessionStore.findOne({ sid: sid });
         
         if(!sessionStore){     
+            console.log("指定されたsidに対応するデータが見つかりませんでした");
             return NextResponse.json({ error: "This sid is invalid" }, { status: 400 });
         }else{
             return NextResponse.json({ 

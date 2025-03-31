@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
+  console.log(req.nextUrl.pathname);
   if (req.nextUrl.pathname === "/users/login") {
     const cookie = req.cookies.get("sid");
     const sid = cookie?.value;
@@ -46,11 +47,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(
       new URL(`${process.env.NEXT_PUBLIC_API_URL}/deals/view`)
     );
-  }else if(req.nextUrl.pathname === "deals/add" || req.nextUrl.pathname === "deals/view"){
+  }else if(req.nextUrl.pathname === "/deals/add" || req.nextUrl.pathname === "/deals/view"){
     const cookie = req.cookies.get("sid");
     const sid = cookie?.value;
     if (!sid) {
-      return NextResponse.next();
+      return NextResponse.redirect(
+        new URL(`${process.env.NEXT_PUBLIC_API_URL}/users/login`)
+      );
     }
 
     const sessionDbData = await axios.get(
@@ -66,7 +69,9 @@ export async function middleware(req: NextRequest) {
     const id = sessionDbData.data.id;
 
     if (!id) {
-      return NextResponse.next();
+      return NextResponse.redirect(
+        new URL(`${process.env.NEXT_PUBLIC_API_URL}/users/login`)
+      );
     }
     
     const userDbData = await axios.get(

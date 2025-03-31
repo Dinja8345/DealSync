@@ -17,8 +17,4 @@ export type User = {
     _id: string,
 }
 
-export type userMsg = {
-    msg: string
-}
-
 export type sexTypes = "男性" | "女性" | "その他"

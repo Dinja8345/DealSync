@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ユーザーログイン",
-  description: "ログインフォーム",
+  title: "ログアウト",
+  description: "仮ログアウトルート",
 };
 
 export default function RootLayout({
@@ -11,10 +11,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
       <body>
         {children}
       </body>
-    </html>
   );
 }
