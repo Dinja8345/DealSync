@@ -1,4 +1,4 @@
-import type { Dispatch } from "react";
+//z軸の関係上、このmodalは使用するコンポーネントの一番下の行で呼び出してください
 
 interface ModalProps {
   isOpen: boolean;
