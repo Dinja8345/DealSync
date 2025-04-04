@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useActionState } from 'react';
 import InputCard from "@/components/InputCard";
+import Modal from "@/components/Modal";
+import { useState, useEffect, useActionState } from "react";
 import { createItem } from "@/lib/actions/dealActions";
 import { inputContent } from "@/types/form";
 import { useUser } from "@/context/UserContext";
@@ -15,32 +16,35 @@ const Addtransactions = () => {
   const [memo, setMemo] = useState("");
   const [lenderId, setLenderId] = useState("");
   const [borrowerId, setBorrowerId] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const { user } = useUser();
-  
-  const [state, createItemAction] = useActionState<cardMsg, any>(createItem, {
-    msg: "",
-  });
-  
-  useEffect(() => {
 
-    if(format == "貸し"){
+  const [msg, createItemAction, isPending] = useActionState<cardMsg, any>(
+    createItem,
+    {
+      msg: "",
+    }
+  );
+
+  useEffect(() => {
+    if (format == "貸し") {
       setLenderId(user?.id as string);
       setBorrowerId("");
-    }else if(format == "借り"){
+    } else if (format == "借り") {
       setBorrowerId(user?.id as string);
       setLenderId("");
     }
-  },[format]);
+  }, [format]);
 
-  const contents: inputContent[] = ([
+  const contents: inputContent[] = [
     {
       name: "形態",
       id: "format",
       options: ["貸し", "借り"],
       state: {
         value: format,
-        setValue: setFormat
-      }
+        setValue: setFormat,
+      },
     },
     {
       name: "名前",
@@ -49,8 +53,8 @@ const Addtransactions = () => {
       inputType: "text",
       state: {
         value: name,
-        setValue: setName
-      }
+        setValue: setName,
+      },
     },
     {
       name: "金額",
@@ -59,8 +63,8 @@ const Addtransactions = () => {
       inputType: "number",
       state: {
         value: money,
-        setValue: setMoney
-      }
+        setValue: setMoney,
+      },
     },
     {
       name: "メモ",
@@ -69,8 +73,8 @@ const Addtransactions = () => {
       inputType: "text",
       state: {
         value: memo,
-        setValue: setMemo
-      }
+        setValue: setMemo,
+      },
     },
     {
       name: "貸す",
@@ -81,8 +85,8 @@ const Addtransactions = () => {
       readOnly: format === "貸し",
       state: {
         value: lenderId,
-        setValue: setLenderId
-      }
+        setValue: setLenderId,
+      },
     },
     {
       name: "借りる",
@@ -93,25 +97,42 @@ const Addtransactions = () => {
       readOnly: format === "借り",
       state: {
         value: borrowerId,
-        setValue: setBorrowerId
-      }
+        setValue: setBorrowerId,
+      },
     },
     {
       name: "期日",
       id: "dueDate",
       placeholder: "期日",
       inputType: "date",
+      state: {
+        value: dueDate,
+        setValue: setDueDate,
+      },
     },
-  ]);
+  ];
 
   return (
     <div>
-      <div className="flex justify-center">
-        <InputCard title="新しい記録" inputContents={contents} state={state} action={createItemAction}/>
-      </div>
-      <div className="flex justify-center pt-3">
-        <a href="/deals/view">一覧へ</a>
-      </div>
+      {isPending ? (
+        <Modal isOpen={isPending}>
+          <div>送信中</div>
+        </Modal>
+      ) : (
+        <>
+          <div className="flex justify-center">
+            <InputCard
+              title="新しい記録"
+              inputContents={contents}
+              state={msg}
+              action={createItemAction}
+            />
+          </div>
+          <div className="flex justify-center pt-3">
+            <a href="/deals/view">一覧へ</a>
+          </div>
+        </>
+      )}
     </div>
   );
 };

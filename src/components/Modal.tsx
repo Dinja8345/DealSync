@@ -2,7 +2,7 @@
 
 interface ModalProps {
   isOpen: boolean;
-  closeModal(...args: any[]): any;
+  closeModal?(...args: any[]): any;
   children: React.ReactNode
 }
 
@@ -15,7 +15,7 @@ const Modal = ({ isOpen, closeModal, children }: ModalProps) => {
     return (
       <div className={overlayClass}>
         <div className={contentClass}>
-          <button className={modalCloseButtonClass} onClick={closeModal}>✕</button>
+          {!closeModal ? null : <button className={modalCloseButtonClass} onClick={closeModal}>✕</button>}
           {children}
         </div>
       </div>
