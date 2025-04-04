@@ -3,7 +3,7 @@
 import InputCard from "@/components/InputCard";
 import Modal from "@/components/Modal";
 import { useState, useEffect, useActionState } from "react";
-import { createItem } from "@/lib/actions/dealActions";
+import { addDeal } from "@/lib/actions/dealActions";
 import { inputContent } from "@/types/form";
 import { useUser } from "@/context/UserContext";
 
@@ -19,8 +19,14 @@ const Addtransactions = () => {
   const [dueDate, setDueDate] = useState("");
   const { user } = useUser();
 
+  const handleAdd = async(msg: cardMsg, formData: FormData) => {
+    formData.append("registrantId", user?.id as string);
+    const result = await addDeal(msg, formData);
+    return result;
+  }  
+
   const [msg, createItemAction, isPending] = useActionState<cardMsg, any>(
-    createItem,
+    handleAdd,
     {
       msg: "",
     }

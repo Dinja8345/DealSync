@@ -6,22 +6,25 @@ import OutputCard from "@/components/OutputCard";
 import { useState, useEffect, useActionState } from "react";
 import { getCardsInfo, editDeal, deleteDeal } from "@/lib/actions/dealActions";
 import { getUserInfo } from "@/lib/actions/userActions";
+import { useUser } from "@/context/UserContext";
 
-import type { outputContent } from "@/types/card";
+import type { deal } from "@/types/card";
 import type { userMsg } from "@/lib/actions/userActions";
 
 const ViewDeals = () => {
-  const [contents, setContents] = useState<outputContent[]>([]);
+  const [contents, setContents] = useState<deal[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deleteContentId, setDeleteContentId] = useState<string>("");
-  const [modalContent, setModalContent] = useState<outputContent | undefined>();
+  const [modalContent, setModalContent] = useState<deal | undefined>();
   const [modalName, setModalName] = useState<string>("");
   const [modalFormat, setModalFormat] = useState<string>("");
   const [modalMoney, setModalMoney] = useState<string>("");
   const [modalDueDate, setModalDueDate] = useState<string>("");
   const [modalMemo, setModalMemo] = useState<string>("");
   const [msg, setMsg] = useState<userMsg>({ msg: "", success: false });
+  const { user } = useUser();
+
 
   const handleEdit = async (msg: userMsg, formData: FormData) => {
     formData.append("_id", modalContent?._id as string);
@@ -58,7 +61,7 @@ const ViewDeals = () => {
   useEffect(() => {
     const fetchData = async () => {
       const user = await getUserInfo();
-      const deals = await getCardsInfo(user.id);
+      const deals = await getCardsInfo(user.id)
       setContents(deals);
       return deals;
     };
@@ -67,7 +70,7 @@ const ViewDeals = () => {
       console.log(deals);
     });
   }, [isEditModalOpen, isDeleteModalOpen]);
-
+  console.log(contents);
   useEffect(() => {
     if (modalContent) {
       setModalFormat(modalContent.format);
@@ -78,7 +81,7 @@ const ViewDeals = () => {
     }
   }, [modalContent]);
 
-  const modalOutputContents = [
+  const modaldeals = [
     {
       name: "形態",
       id: "format",
@@ -133,6 +136,7 @@ const ViewDeals = () => {
   return (
     <>
       <OutputCard
+        id={user?.id}
         contents={contents}
         openEditModal={openEditModal}
         setEditModalContent={setModalContent}
@@ -168,7 +172,7 @@ const ViewDeals = () => {
         <Form
           title="貸し借り編集"
           formClass=""
-          inputContents={modalOutputContents}
+          inputContents={modaldeals}
           state={msg}
           action={editAction}
         ></Form>

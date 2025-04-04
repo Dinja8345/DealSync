@@ -11,6 +11,7 @@ const dealSchema = new Schema({
   memo: { type: String, required: false },
   lenderId: { type: String, required: false },
   borrowerId: { type: String, required: false },
+  registrantId: { type: String, required: true },
 });
 
 const Deal: Model<any> = models?.Transaction || model('Transaction', dealSchema);

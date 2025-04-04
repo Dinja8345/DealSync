@@ -35,7 +35,7 @@ const getCardsInfo = async (id: string) => {
   }
 };
 
-const createItem = async (
+const addDeal = async (
   state: cardMsg,
   formData: FormData
 ): Promise<cardMsg> => {
@@ -47,6 +47,7 @@ const createItem = async (
   const memo: string = formData.get("memo") as string;
   const lenderId = formData.get("lenderId") as string;
   const borrowerId = formData.get("borrowerId") as string;
+  const registrantId = formData.get("registrantId") as string;
 
   if (name === "" || money === "" || dueDate === "") {
     return { msg: "入力フィールドが空のところがあります。" };
@@ -62,6 +63,7 @@ const createItem = async (
       memo,
       lenderId,
       borrowerId,
+      registrantId
     });
 
     return { msg: "登録に成功しました" };
@@ -118,4 +120,4 @@ const deleteDeal = async(_id: string): Promise<userMsg> => {
   }
 }
 
-export { getCardsInfo, createItem, editDeal, deleteDeal };
+export { getCardsInfo, addDeal, editDeal, deleteDeal };

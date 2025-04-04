@@ -1,10 +1,13 @@
-export type outputContent = {
+export type deal = {
     format: formats,
     name: string,
     money: string,
     dueDate: string,
     memo: string,
     status: tranStatus,
+    borrowerId: string,
+    lenderId: string,
+    registrantId: string,
     _id: string
 }
 

@@ -31,11 +31,11 @@ export async function GET(req: Request){
 export async function POST(req: Request){
     try{
         const body = await req.json();
-        const { format, name, money, dueDate, status, memo, lenderId, borrowerId } = body;
-        const requiredFields = { format, name, money, dueDate, status };
+        const { format, name, money, dueDate, status, memo, lenderId, borrowerId, registrantId } = body;
+        const requiredFields = { format, name, money, dueDate, status, registrantId };
         
         if(Object.values(requiredFields).some((v) => !v)) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
-        
+        console.log(registrantId);
         await connectDB();
         
         const newDeal = new Deal({
@@ -47,8 +47,9 @@ export async function POST(req: Request){
             memo: memo ?? "",
             lenderId: lenderId ?? "",
             borrowerId: borrowerId ?? "",
+            registrantId: registrantId
         });
-
+        console.log(newDeal);
         await newDeal.save();
 
         return NextResponse.json({ 
