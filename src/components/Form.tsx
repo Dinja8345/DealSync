@@ -69,7 +69,7 @@ const Form: React.FC<formProps> = ({ title, formClass, inputContents, state, act
         <Button text={"登録"}/>
         </div>
       </form>
-      <div>{state.msg}</div>
+      <div>{state?.msg}</div>
     </>
   );
 };

@@ -4,7 +4,7 @@ export type formProps = {
     title: string,
     formClass?: string
     inputContents: inputContent[],
-    state: any,
+    state?: any,
     action: any
 }
 

@@ -93,3 +93,30 @@ export async function PUT(req: Request){
         return NextResponse.json({ error: e }, { status: 500 })
     }
 }
+
+export async function DELETE(req: Request) {
+    try{
+        const body = await req.json();
+        const { _id } = body;
+
+        if(!_id){
+            return NextResponse.json({ error: "This request is invalid" }, { status: 400 })
+        }
+
+        await connectDB();
+
+        const deletedDeal = await Deal.findByIdAndDelete(_id);
+
+        if(!deletedDeal){
+            return NextResponse.json({ error: "Deal not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            message: "Success delete deal",
+            deletedDeal,
+        });
+    }catch(e){
+        console.log(e);
+        return NextResponse.json({ error: e }, { status: 500});
+    }
+}

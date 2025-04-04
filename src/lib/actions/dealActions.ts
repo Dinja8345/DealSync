@@ -5,11 +5,13 @@ import axios from "axios";
 import type { tranStatus, cardMsg } from "@/types/card";
 import { userMsg } from "./userActions";
 
+const url = `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`
+
 const getCardsInfo = async (id: string) => {
   try {
     const query = `{"$or": [{ "lenderId": "${id}" }, { "borrowerId": "${id}" }]}`;
     const dealsRes = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`,
+      url,
       {
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +53,7 @@ const createItem = async (
   }
 
   try {
-    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`, {
+    await axios.post(url, {
       format,
       name,
       money,
@@ -69,6 +71,8 @@ const createItem = async (
   }
 };
 
+
+
 const editDeal = async(state: userMsg, formData: FormData) => {
   const format: string = formData.get("format") as string;
   const name: string = formData.get("name") as string;
@@ -79,7 +83,7 @@ const editDeal = async(state: userMsg, formData: FormData) => {
   const _id: string = formData.get("_id") as string;
 
   try{
-    await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`,{
+    await axios.put(url, {
       format,
       name,
       money,
@@ -95,4 +99,23 @@ const editDeal = async(state: userMsg, formData: FormData) => {
   };
 };
 
-export { getCardsInfo, createItem, editDeal };
+
+
+const deleteDeal = async(_id: string): Promise<userMsg> => {
+  try{
+    const payload = {
+      _id: _id
+    }
+
+    await axios.delete(url, {
+      data: payload
+    });
+
+    return { msg:"削除に成功", success: true};
+  }catch(e){
+    console.log("deal削除acitonでエラー:", e);
+    return { msg:"削除に失敗", success: false};
+  }
+}
+
+export { getCardsInfo, createItem, editDeal, deleteDeal };
