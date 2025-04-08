@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createUser } from '@/lib/actions/userActions';
 import type { inputContent } from "@/types/form";
 import type { userMsg } from "@/lib/actions/userActions";
+import type { sexTypes } from "@/types/user";
 
 const CreateUsers = () => {
   const router = useRouter();
@@ -18,7 +19,7 @@ const CreateUsers = () => {
 
   const [familyName, setFamilyName] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
-  //const [sex, setSex] = useState<sexTypes>("男性");
+  const [sex, setSex] = useState<sexTypes>("男性");
   const [email, setEmail] = useState<string>("");
   const [id, setId] = useState<string>("");
 
@@ -80,10 +81,10 @@ const CreateUsers = () => {
       name: "性別",
       id: "sex",
       options: ["男性","女性","その他"],
-      // state: {
-      //   value: sex,
-      //   setValue: setSex
-      // }
+      state: {
+        value: sex,
+        setValue: setSex
+      }
     }
   ];
 

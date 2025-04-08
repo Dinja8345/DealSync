@@ -6,17 +6,16 @@ import connectDB from "@/lib/mongodb";
 import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
 import { cookies } from "next/headers";
-
-import type { sexTypes } from "@/types/user";
+import type { sexTypes, User } from "@/types/user";
 
 const getUserInfo = async () => {
   const cookieStore = await cookies();
   const sid = cookieStore.get("sid");
   
-  if(!sid){
+  if(!sid?.value){
     return null;
   }
-
+  
   const sessionDbData = await axios.get(
     `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
     {
@@ -54,7 +53,8 @@ const getUserInfo = async () => {
 
 interface userMsg {
   msg: string,
-  success: boolean
+  success: boolean,
+  user?: User
 }
 
 const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
@@ -142,13 +142,13 @@ const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
     } else {
       return { msg: "idまたはパスワードが一致していません", success: false };
     }
+    
+    return { msg: "ログイン完了", success: true, user: storedUser.data.user};
+
   } catch (e) {
     console.error(e);
     return { msg: "ログイン中にエラーが発生しました。", success: false };
   }
-
-  return { msg: "ログイン完了", success: true };
-
 }
 
 

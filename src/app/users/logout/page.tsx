@@ -1,17 +1,18 @@
 "use client"
 
 import { useEffect } from "react";
-import { userLogout } from "@/lib/actions/userActions";
+import { useUser } from "@/context/UserContext";
 
 export default function Home() {
+  const { setUser } = useUser();
+
   useEffect(() => {
-    userLogout().then();
-  }, []);
+    setUser(undefined);
+  })
 
   return (
-    <>
+    <>  
       <div>ログアウトしました</div>
-      <a href="login">ログインページ</a>
     </>
   );
 }

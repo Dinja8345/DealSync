@@ -2,7 +2,6 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  console.log(req.nextUrl.pathname);
   if (req.nextUrl.pathname === "/users/login") {
     const cookie = req.cookies.get("sid");
     const sid = cookie?.value;

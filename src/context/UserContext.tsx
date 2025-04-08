@@ -1,6 +1,5 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
-
+import { createContext, useContext, useState, useMemo, ReactNode } from "react";
 import type { User } from "@/types/user";
 
 interface UserContextType {
@@ -18,8 +17,10 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 const UserProvider = ({ children, initUser }: Props) => {
     const [user, setUser] = useState<User | undefined>(initUser);
 
+    const userContextValue = useMemo(() => ({ user, setUser }), [user]);
+
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={userContextValue}>
             {children}
         </UserContext.Provider>
     );

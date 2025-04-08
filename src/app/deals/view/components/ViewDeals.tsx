@@ -67,10 +67,9 @@ const ViewDeals = () => {
     };
 
     fetchData().then((deals) => {
-      console.log(deals);
+      //console.log(deals);
     });
   }, [isEditModalOpen, isDeleteModalOpen]);
-  console.log(contents);
   useEffect(() => {
     if (modalContent) {
       setModalFormat(modalContent.format);

@@ -1,6 +1,7 @@
 "use client"
 
 import Form from "@/components/Form";
+import { useUser } from "@/context/UserContext";
 import { useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/actions/userActions";
@@ -10,10 +11,14 @@ import type { userMsg } from "@/lib/actions/userActions";
 const UserLogin = () => {
   const [id, setId] = useState<string>("");
   const router = useRouter();
+  const { setUser } = useUser()
   
   const handleSubmit = async(state: any, formData: FormData): Promise<userMsg> =>{
     const result = await loginUser(state, formData);
-    if(result.success) router.push("/deals/view");
+    if(result.success){
+      setUser(result.user);
+      router.push("/deals/view");
+    } 
     return result;
   }
   
@@ -44,6 +49,6 @@ const UserLogin = () => {
       <Form title="ログイン" inputContents={inputContents} state={loginMsg} action={loginAction} />
     </>
   );
-};
 
+};
 export default UserLogin;

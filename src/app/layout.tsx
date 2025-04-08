@@ -1,4 +1,7 @@
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
+import { UserProvider } from "@/context/UserContext";
+import { getUserInfo } from "@/lib/actions/userActions";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -6,16 +9,22 @@ export const metadata: Metadata = {
   description: "DebtSync(仮のホームページ)",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  const user = await getUserInfo();
+
   return (
-    <html lang="ja">
-      <body>
-        {children}
-      </body>
-    </html>
+    <UserProvider initUser={user}>
+      <html lang="ja">
+        <body>
+          <div className="pt-[90px]">{children}</div>
+          <Navbar />
+        </body>
+      </html>
+    </UserProvider>
   );
 }

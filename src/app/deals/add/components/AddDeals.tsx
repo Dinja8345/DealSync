@@ -134,9 +134,6 @@ const Addtransactions = () => {
               action={createItemAction}
             />
           </div>
-          <div className="flex justify-center pt-3">
-            <a href="/deals/view">一覧へ</a>
-          </div>
         </>
       )}
     </div>
