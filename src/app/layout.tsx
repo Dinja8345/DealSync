@@ -21,7 +21,7 @@ export default async function RootLayout({
     <UserProvider initUser={user}>
       <html lang="ja">
         <body>
-          <div className="pt-[90px]">{children}</div>
+          <div className="pt-[70px]">{children}</div>
           <Navbar />
         </body>
       </html>
