@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ホーム画面",
-  description: "DebtSync(仮のホームページ)",
+  description: "DealSync(仮のホームページ)",
 };
 
 export default async function RootLayout({
