@@ -75,7 +75,7 @@ const addDeal = async (
 
 
 
-const editDeal = async(state: userMsg, formData: FormData) => {
+const editDeal = async(formData: FormData) => {
   const format: string = formData.get("format") as string;
   const name: string = formData.get("name") as string;
   const money: string = formData.get("money") as string;

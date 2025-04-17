@@ -14,6 +14,9 @@ import type { userMsg } from "@/lib/actions/userActions";
 const ViewDeals = () => {
   const [contents, setContents] = useState<deal[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isEditCheckModalOpen, setIsEditCheckModalOpen] =
+    useState<boolean>(false);
+  const [tmpEditFormData, setTmpEditFormData] = useState<FormData>();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deleteContentId, setDeleteContentId] = useState<string>("");
   const [modalContent, setModalContent] = useState<deal | undefined>();
@@ -25,29 +28,41 @@ const ViewDeals = () => {
   const [msg, setMsg] = useState<userMsg>({ msg: "", success: false });
   const { user } = useUser();
 
-
-  const handleEdit = async (msg: userMsg, formData: FormData) => {
+  // 編集フォーム入力後の確認modal出現&必要情報保存
+  const editCheck = (formData: FormData) => {
     formData.append("_id", modalContent?._id as string);
-    const result = await editDeal(msg, formData);
+    setTmpEditFormData(formData);
+    openEditCheckModal();
+  };
+
+  //　編集確認が受諾された後に保存されていた情報を使用して変更
+  const handleEdit = async () => {
+    const result = await editDeal(tmpEditFormData as FormData);
     if (result.success === true) {
       closeEditModal();
     }
+    closeEditCheckModal();
     setMsg(result);
     return result;
   };
 
-  const [editMsg, editAction] = useActionState<userMsg, FormData>(handleEdit, {
-    msg: "",
-    success: false,
-  });
-
   const openEditModal = () => {
+    setMsg({ msg: "", success: false });
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setMsg({ msg: "", success: false });
+  };
+
+  const openEditCheckModal = () => {
+    setIsEditCheckModalOpen(true);
+  };
+
+  const closeEditCheckModal = () => {
+    setIsEditCheckModalOpen(false);
+    setTmpEditFormData(undefined);
   };
 
   const openDeleteModal = () => {
@@ -58,10 +73,11 @@ const ViewDeals = () => {
     setIsDeleteModalOpen(false);
   };
 
+  //　初回ロード、edit,delete時に取引情報更新
   useEffect(() => {
     const fetchData = async () => {
       const user = await getUserInfo();
-      const deals = await getCardsInfo(user.id)
+      const deals = await getCardsInfo(user.id);
       setContents(deals);
       return deals;
     };
@@ -70,6 +86,7 @@ const ViewDeals = () => {
       //console.log(deals);
     });
   }, [isEditModalOpen, isDeleteModalOpen]);
+
   useEffect(() => {
     if (modalContent) {
       setModalFormat(modalContent.format);
@@ -151,7 +168,7 @@ const ViewDeals = () => {
           <div className="flex space-x-4">
             <button
               className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700"
-              onClick={async() => {
+              onClick={async () => {
                 await deleteDeal(deleteContentId);
                 closeDeleteModal();
               }}
@@ -173,8 +190,27 @@ const ViewDeals = () => {
           formClass=""
           inputContents={modaldeals}
           state={msg}
-          action={editAction}
+          action={editCheck}
         ></Form>
+        <Modal isOpen={isEditCheckModalOpen} closeModal={closeEditCheckModal}>
+          <div className="flex justify-center mb-3">
+            <div>変更を保存しますか?</div>
+          </div>
+          <div className="flex justify-center gap-10">
+            <button
+              onClick={handleEdit}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              はい
+            </button>
+            <button
+              onClick={closeEditCheckModal}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              いいえ
+            </button>
+          </div>
+        </Modal>
       </Modal>
     </>
   );
