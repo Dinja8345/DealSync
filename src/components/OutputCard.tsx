@@ -1,3 +1,5 @@
+import Confetti from "@/components/Confetti";
+import { useState } from "react";
 import { changeDealStatus } from "@/lib/actions/dealActions";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { deal, formats, tranStatus } from "@/types/card";
@@ -53,8 +55,13 @@ const OutputCard = ({
 
     // deals[]stateのidが一致するdealのstatusに楽観的変更を行う
     const isChecked = e.target.checked;
-    console.log(isChecked);
     const status: tranStatus = isChecked ? "返済済み" : "未返済";
+
+    // 返済済みになるなら紙吹雪を発射
+    if(isChecked){
+      setShowRightConfetti(true);
+      setShowLeftConfetti(true);
+    }
 
     await changeDealStatus(_id, status);
 
@@ -66,6 +73,9 @@ const OutputCard = ({
       )
     )
   };
+
+  const [showRightConfetti, setShowRightConfetti] = useState<boolean>(false);
+  const [showLeftConfetti, setShowLeftConfetti] = useState<boolean>(false);
   
   return (
     <>
@@ -133,6 +143,12 @@ const OutputCard = ({
           </div>
         );
       })}
+      <Confetti
+        showRightConfetti={showRightConfetti} 
+        setShowRightConfetti={setShowRightConfetti}
+        showLeftConfetti={showLeftConfetti}
+        setShowLeftConfetti={setShowLeftConfetti}
+      />
     </>
   );
 };
