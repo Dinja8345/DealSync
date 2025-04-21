@@ -1,4 +1,4 @@
-export type deal = {
+export interface deal{
     format: formats,
     name: string,
     money: string,

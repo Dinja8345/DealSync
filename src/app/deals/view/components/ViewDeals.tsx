@@ -14,8 +14,7 @@ import type { userMsg } from "@/lib/actions/userActions";
 const ViewDeals = () => {
   const [contents, setContents] = useState<deal[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [isEditCheckModalOpen, setIsEditCheckModalOpen] =
-    useState<boolean>(false);
+  const [isEditCheckModalOpen, setIsEditCheckModalOpen] = useState<boolean>(false);
   const [tmpEditFormData, setTmpEditFormData] = useState<FormData>();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deleteContentId, setDeleteContentId] = useState<string>("");
@@ -97,7 +96,8 @@ const ViewDeals = () => {
     }
   }, [modalContent]);
 
-  const modaldeals = [
+
+  const modalContents = [
     {
       name: "形態",
       id: "format",
@@ -154,6 +154,7 @@ const ViewDeals = () => {
       <OutputCard
         id={user?.id}
         contents={contents}
+        setContents={setContents}
         openEditModal={openEditModal}
         setEditModalContent={setModalContent}
         openDeleteModal={openDeleteModal}
@@ -188,7 +189,7 @@ const ViewDeals = () => {
         <Form
           title="貸し借り編集"
           formClass=""
-          inputContents={modaldeals}
+          inputContents={modalContents}
           state={msg}
           action={editCheck}
         ></Form>

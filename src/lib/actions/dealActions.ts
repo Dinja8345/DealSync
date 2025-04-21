@@ -83,7 +83,8 @@ const editDeal = async(formData: FormData) => {
   const status: tranStatus = "未返済";
   const memo: string = formData.get("memo") as string;
   const _id: string = formData.get("_id") as string;
-
+  const query = "update"
+  
   try{
     await axios.put(url, {
       format,
@@ -93,7 +94,8 @@ const editDeal = async(formData: FormData) => {
       status,
       memo,
       _id,
-    })
+      query
+    });
     return { msg: "更新に成功", success: true };
   }catch(e){
     console.log("deal更新actionでエラー: ", e);
@@ -101,7 +103,20 @@ const editDeal = async(formData: FormData) => {
   };
 };
 
-
+const changeDealStatus = async(_id: string, status: tranStatus) => {
+  const query = "changeStatus";
+  
+  try{
+    await axios.put(url, {
+      _id,
+      status,
+      query
+    })
+  }catch(e){
+    console.log("status更新actionでエラー", e);
+    return { msg: "更新に失敗", success: false };
+  }
+}
 
 const deleteDeal = async(_id: string): Promise<userMsg> => {
   try{
@@ -120,4 +135,4 @@ const deleteDeal = async(_id: string): Promise<userMsg> => {
   }
 }
 
-export { getCardsInfo, addDeal, editDeal, deleteDeal };
+export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal };
