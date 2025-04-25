@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import crypto from "crypto";
-import connectDB from "@/lib/mongodb";
 import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
 import { cookies } from "next/headers";
@@ -37,6 +36,7 @@ const getUserInfo = async () => {
     {
       headers: {
         "Content-Type": "application/json",
+        "query": "idToUser",
         "id": id,
       },
     }
@@ -110,13 +110,13 @@ const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
 
 const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
   try {
-    await connectDB();
     const id = formData.get("id") as string;
     const inputedPass = formData.get("password") as string;
     const storedUser = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
       headers: {
         "Content-Type": "application/json",
-        "id": id
+        "query": "idToUser",
+        "id": id,
       },
     });
     
@@ -152,10 +152,25 @@ const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
 }
 
 
+
+const getAllUsersInfo = async(): Promise<User[]> => {
+  const allUsersData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
+    headers: {
+      "Content-Type": "application/json",
+      "query": "all",
+    },
+  });
+
+  const allUsers = allUsersData.data.user;
+  return allUsers;
+}
+
+
+
 const userLogout = async() => {
   (await cookies()).delete('sid');
 }
 
-export { getUserInfo, createUser, loginUser, userLogout };
+export { getUserInfo, createUser, loginUser, userLogout, getAllUsersInfo };
 export type { userMsg };
 

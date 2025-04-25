@@ -78,6 +78,7 @@ export async function middleware(req: NextRequest) {
       {
         headers: {
           "Content-Type": "application/json",
+          "query": "idToUser",
           "id": id,
         },
       }

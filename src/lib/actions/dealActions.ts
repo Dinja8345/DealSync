@@ -1,9 +1,8 @@
 "use server";
 
 import axios from "axios";
-
+import { getAllUsersInfo, userMsg } from "./userActions";
 import type { tranStatus, cardMsg } from "@/types/card";
-import { userMsg } from "./userActions";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`
 
@@ -49,11 +48,20 @@ const addDeal = async (
   const borrowerId = formData.get("borrowerId") as string;
   const registrantId = formData.get("registrantId") as string;
 
+
   if (name === "" || money === "" || dueDate === "") {
     return { msg: "入力フィールドが空のところがあります。" };
   }
 
   try {
+    const dealPartnerId = format === "貸し" ? borrowerId : lenderId;
+    if(dealPartnerId){
+      const isIdExisting =  await isUserIdExisting(dealPartnerId); 
+      if(!isIdExisting){
+        return { msg: "入力された取引相手のidのユーザーは存在しません" };
+      }
+    }
+
     await axios.post(url, {
       format,
       name,
@@ -103,6 +111,8 @@ const editDeal = async(formData: FormData) => {
   };
 };
 
+
+
 const changeDealStatus = async(_id: string, status: tranStatus) => {
   const query = "changeStatus";
   
@@ -135,4 +145,11 @@ const deleteDeal = async(_id: string): Promise<userMsg> => {
   }
 }
 
-export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal };
+
+// 受け取ったidから全てのuser.idを走査し、一致するものがあるかを返す
+const isUserIdExisting = async(id: string): Promise<boolean> => {
+  const users = await getAllUsersInfo();
+  return users.some(user => user.id === id);
+}
+
+export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal, isUserIdExisting };

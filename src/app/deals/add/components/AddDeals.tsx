@@ -4,6 +4,7 @@ import InputCard from "@/components/InputCard";
 import Modal from "@/components/Modal";
 import { useState, useEffect, useActionState } from "react";
 import { addDeal } from "@/lib/actions/dealActions";
+import { getAllUsersInfo } from "@/lib/actions/userActions";
 import { inputContent } from "@/types/form";
 import { useUser } from "@/context/UserContext";
 
@@ -31,6 +32,10 @@ const Addtransactions = () => {
       msg: "",
     }
   );
+
+  useEffect(() => {
+    getAllUsersInfo().then(data => console.log(data));
+  }, []);
 
   useEffect(() => {
     if (format == "貸し") {

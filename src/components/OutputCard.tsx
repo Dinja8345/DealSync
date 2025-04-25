@@ -57,14 +57,9 @@ const OutputCard = ({
     const isChecked = e.target.checked;
     const status: tranStatus = isChecked ? "返済済み" : "未返済";
 
-    // 返済済みになるなら紙吹雪を発射
-    if(isChecked){
-      setShowRightConfetti(true);
-      setShowLeftConfetti(true);
-    }
-
+    
     await changeDealStatus(_id, status);
-
+    
     setContents(prevDeals => 
       prevDeals.map(deal => 
         deal._id === _id
@@ -72,6 +67,12 @@ const OutputCard = ({
         : deal
       )
     )
+    
+    // 返済済みになるなら紙吹雪を発射
+    if(isChecked){
+      setShowRightConfetti(true);
+      setShowLeftConfetti(true);
+    }
   };
 
   const [showRightConfetti, setShowRightConfetti] = useState<boolean>(false);
