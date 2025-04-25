@@ -165,12 +165,55 @@ const getAllUsersInfo = async(): Promise<User[]> => {
   return allUsers;
 }
 
+const addUserFriend = async(userId: string, otherUserId: string) => {
+  try{
+    const isUserExisting = await isUserIdExisting(userId);
+    const isOtherUserExisting = await isUserIdExisting(otherUserId);
+  
+    if(isUserExisting && isOtherUserExisting){
+      const userData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
+        headers: {
+          "Content-Type": "application/json",
+          "query": "idToUser",
+          "id": userId,
+        },
+      });
+      
+      const otherUserData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
+        headers: {
+          "Content-Type": "application/json",
+          "query": "idToUser",
+          "id": userId,
+        },
+      });
+
+      const userObjectId = userData.data.user._id;
+      const otherUserObjectId = otherUserData.data.user._id;
+
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+        {
+          query: "addFriend",
+          userObjectId,
+          otherUserObjectId        
+        }
+      )
+    }
+  }catch(e){
+    console.log(e);
+  }
+}
 
 
 const userLogout = async() => {
   (await cookies()).delete('sid');
 }
 
-export { getUserInfo, createUser, loginUser, userLogout, getAllUsersInfo };
+// 受け取ったidから全てのuser.idを走査し、一致するものがあるかを返す
+const isUserIdExisting = async(id: string): Promise<boolean> => {
+  const users = await getAllUsersInfo();
+  return users.some(user => user.id === id);
+}
+
+export { getUserInfo, createUser, loginUser, userLogout, getAllUsersInfo, addUserFriend, isUserIdExisting };
 export type { userMsg };
 

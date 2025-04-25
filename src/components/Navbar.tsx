@@ -36,7 +36,7 @@ const Navbar = () => {
             </a>
           ) : (
             <>
-              <a href="/users/create" className={linkClass}>
+              <a href="/users/signup" className={linkClass}>
                 新規登録
               </a>
               <a href="/users/login" className={linkClass}>

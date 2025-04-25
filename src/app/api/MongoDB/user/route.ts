@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
+import { cookies } from "next/headers";
 
 export async function GET(req: Request){
     try{
@@ -39,14 +40,17 @@ export async function POST(req: Request){
         const { familyName, firstName, sex, email, password, id } = body;
         if(!familyName || !firstName || !sex || !email || !password || !id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
         await connectDB();
+        
         const newUser = new User({
             familyName,
             firstName,
             sex,
             email,
             password,
-            id
+            id,
+            friends: []
         });
+        
         await newUser.save();
         return NextResponse.json({ 
             message: "user saved",
@@ -55,5 +59,38 @@ export async function POST(req: Request){
     }catch(e){
         console.error(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
+    }
+}
+
+export async function PUT(req: Request){
+    try{
+        const body = await req.json();
+        const { query } = body;
+
+        if(query == "addFriend"){
+            const { userObjectId, otherUserObjectId } = body;
+
+            await connectDB();
+
+            await User.updateOne(
+                {_id: userObjectId},
+                {
+                    $addToSet: {
+                        friends: otherUserObjectId 
+                    }
+                }
+            );
+
+            await User.updateOne(
+                {_id: otherUserObjectId},
+                {
+                    $addToSet: {
+                        friends: userObjectId 
+                    }
+                }
+            );
+        }
+    }catch(e){
+        console.log(e);
     }
 }

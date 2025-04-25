@@ -1,7 +1,7 @@
 "use server";
 
 import axios from "axios";
-import { getAllUsersInfo, userMsg } from "./userActions";
+import { isUserIdExisting, userMsg } from "./userActions";
 import type { tranStatus, cardMsg } from "@/types/card";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`
@@ -146,10 +146,5 @@ const deleteDeal = async(_id: string): Promise<userMsg> => {
 }
 
 
-// 受け取ったidから全てのuser.idを走査し、一致するものがあるかを返す
-const isUserIdExisting = async(id: string): Promise<boolean> => {
-  const users = await getAllUsersInfo();
-  return users.some(user => user.id === id);
-}
 
-export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal, isUserIdExisting };
+export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal };
