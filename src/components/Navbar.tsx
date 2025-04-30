@@ -17,7 +17,7 @@ const Navbar = () => {
  
   return (
     <>
-      <div className="bg-stone-900 w-full h-[70px] py-[20px] px-[50px] box-border fixed inset-x-0 top-0 z-100 flex items-center">
+      <div className="bg-stone-900 w-full h-[70px] py-[20px] px-[50px] box-border fixed inset-x-0 top-0 z-30 flex items-center">
         <div className="flex justify-start">
           <a href="/" className={linkClass}>
             ホーム

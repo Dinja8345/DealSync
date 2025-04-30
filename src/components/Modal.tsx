@@ -1,28 +1,50 @@
 //z軸の関係上、このmodalは使用するコンポーネントの一番下の行で呼び出してください
 
+import type { ReactNode } from 'react';
+
 interface ModalProps {
   isOpen: boolean;
-  closeModal?(...args: any[]): any;
-  children: React.ReactNode
+  closeModal?: (...args: any[]) => any; // closeModalはオプションのまま
+  children: ReactNode;
 }
 
 const Modal = ({ isOpen, closeModal, children }: ModalProps) => {
-  const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center"
-  const contentClass = "z-10 w-1/2 p-4 rounded-md bg-white relative"
-  const modalCloseButtonClass = "text-gray-500 hover:text-gray-700 transition duration-200 rounded-full p-2 absolute top-0 right-1 focus:outline-none"
-
-  if (isOpen) {
-    return (
-      <div className={overlayClass}>
-        <div className={contentClass}>
-          {!closeModal ? null : <button className={modalCloseButtonClass} onClick={closeModal}>✕</button>}
-          {children}
-        </div>
-      </div>
-    );
-  } else {
+  // isOpenがfalseなら何もレンダリングしない
+  if (!isOpen) {
     return null;
   }
+
+  // モーダルが開いている場合のJSX
+  return (
+    // オーバーレイ: 画面全体を覆い、背景を暗くする
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 transition-opacity duration-300 ease-in-out"
+      // オーバーレイクリックで閉じる場合 (オプション)
+      // onClick={closeModal}
+    >
+      {/* モーダルコンテンツエリア: クリックイベントが親(オーバーレイ)に伝播しないように */}
+      <div
+        className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 my-8 p-6 transform transition-all duration-300 ease-in-out"
+        onClick={(e) => e.stopPropagation()} // コンテンツクリックで閉じないように
+      >
+        {/* 閉じるボタン (closeModalが提供されている場合のみ表示) */}
+        {closeModal && (
+          <button
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1 transition duration-150 ease-in-out"
+            onClick={closeModal}
+            aria-label="閉じる" // アクセシビリティのため
+          >
+            {/* Heroicon: x-mark */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+        {/* モーダルの中身 */}
+        {children}
+      </div>
+    </div>
+  );
 };
 
 export default Modal;

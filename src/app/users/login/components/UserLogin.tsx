@@ -51,8 +51,6 @@ const UserLogin = () => {
 
   return (
     <>
-      <div>ログインページ</div>
-
       <div className="p-10">
         <Form
           title="ログイン"
