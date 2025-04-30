@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FriendCard } from "@/components/FriendCard";
+import { FriendCard } from "@/components/FriendCard"; // FriendCardもTailwindでスタイルされていることを想定
 import { useUser } from "@/context/UserContext";
 import {
   getFriendRequests,
@@ -13,115 +13,212 @@ import type { FriendRequest } from "@/types/user";
 
 const FriendsManagement = () => {
   const [requestId, setRequestId] = useState("");
-  const [requestErrorMsg, setRequestErrorMsg] = useState("");
+  const [requestStatus, setRequestStatus] = useState<{ type: 'idle' | 'error' | 'success' | 'info', message: string }>({ type: 'idle', message: "" }); // ステータスとメッセージを管理
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [isRequestLoading, setIsRequestLoading] = useState(false);
   const { user } = useUser();
 
+  // エラー/成功メッセージをクリアするヘルパー関数
+  const clearRequestStatus = () => {
+    setRequestStatus({ type: 'idle', message: '' });
+  };
+
+  // Inputが変更されたらメッセージをクリア
+  useEffect(() => {
+    if (requestId) {
+      clearRequestStatus();
+    }
+  }, [requestId]);
+
+
   const sendFriendRequestHandler = async () => {
     setIsRequestLoading(true);
+    setRequestStatus({ type: 'idle', message: '' }); // Reset status on new request
+
     try {
-      if (requestId === user?.id) {
-        setRequestErrorMsg("このidはあなたのidです");
-      } else {
-        const isUserExisting = await isUserIdExisting(requestId);
-        if (isUserExisting && user) {
-          const result = await isFriend(user.friends, requestId);
-
-          if (!result) {
-            const res = await sendFriendRequest(user.id, requestId);
-
-            if (res?.error === "Conflict") {
-              setRequestErrorMsg(
-                "そのユーザーにはすでにリクエストを送信しています。"
-              );
-            } else if (res?.newFriendRequest) {
-              setRequestErrorMsg("フレンドリクエストを送信しました。");
-            } else {
-              setRequestErrorMsg("リクエスト送信中にエラー。");
-            }
-          } else {
-            setRequestErrorMsg(result + "このユーザーはすでにフレンドです。");
-          }
-
-        } else {
-          setRequestErrorMsg("入力されたidと一致するユーザーが存在しません。");
-        }
+      if (!user) {
+        setRequestStatus({ type: 'error', message: "ユーザー情報が見つかりません。" });
+        return;
       }
-      // requestIdと一致するuserがいればフレンドリクエストをdbに登録
+      if (!requestId.trim()) {
+          setRequestStatus({ type: 'error', message: "ユーザーIDを入力してください。" });
+          return;
+      }
+      if (requestId === user.id) {
+        setRequestStatus({ type: 'error', message: "自分自身にリクエストを送ることはできません。" });
+        return; // ここで処理を終了させる
+      }
+
+      const isUserExisting = await isUserIdExisting(requestId);
+      if (!isUserExisting) {
+        setRequestStatus({ type: 'error', message: "入力されたIDと一致するユーザーが存在しません。" });
+        return;
+      }
+
+      const alreadyFriend = await isFriend(user.friends, requestId);
+      if (alreadyFriend) {
+        setRequestStatus({ type: 'info', message: `ユーザー (${alreadyFriend}) は既にフレンドです。`}); // Use 'info' type
+        return;
+      }
+
+      const res = await sendFriendRequest(user.id, requestId);
+
+      if (res?.error === "Conflict") {
+        setRequestStatus({ type: 'info', message: "そのユーザーにはすでにリクエストを送信済みです。" }); // Use 'info' type
+      } else if (res?.newFriendRequest) {
+        setRequestStatus({ type: 'success', message: "フレンドリクエストを送信しました。" });
+        setRequestId(""); // 送信成功時にID入力欄をクリア
+      } else {
+        setRequestStatus({ type: 'error', message: "リクエスト送信中にエラーが発生しました。" });
+      }
+
+    } catch (error) {
+        console.error("Error sending friend request:", error);
+        setRequestStatus({ type: 'error', message: "予期せぬエラーが発生しました。" });
     } finally {
       setIsRequestLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user) {
-      getFriendRequests(user._id).then((result) => {
-        setReceivedRequests(result);
-      });
+    if (user?._id) { // userとuser._idが存在するか確認
+      getFriendRequests(user._id)
+        .then((result) => {
+          if (result) { // resultがnullやundefinedでないことを確認
+             setReceivedRequests(result);
+          } else {
+             setReceivedRequests([]); // データがない場合は空配列を設定
+             console.log("受信したフレンドリクエストはありませんでした。");
+          }
+        })
+        .catch(error => {
+           console.error("Failed to fetch friend requests:", error);
+           setReceivedRequests([]); // エラー時も空配列を設定
+        });
+    } else {
+      // ユーザー情報がまだ読み込まれていない、または存在しない場合
+      setReceivedRequests([]);
     }
-  }, []);
+  }, [user]); // userオブジェクト全体を依存関係に含める
 
-  const inputClass =
-    "flex-[5] bg-teal-50 rounded-sm outline-2 outline-zinc-400 ";
-  const buttonClass = "flex-1 rounded-md font-bold text-white w-30 ";
+  // ステータスメッセージのスタイルを決定
+  const getStatusMessageClass = () => {
+    switch (requestStatus.type) {
+      case 'error':
+        return 'text-red-600';
+      case 'success':
+        return 'text-green-600';
+      case 'info':
+          return 'text-blue-600';
+      default:
+        return 'text-gray-500'; // idle または他のケース
+    }
+  };
+
 
   return (
-    <div>
-      <div className="flex items-center justify-center">
-        <h1 className="text-2xl font-bold mb-4 p-5 pb-2">フレンド管理</h1>
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-4 p-5 pb-2">フレンド一覧</h2>
-        {user?.friends.map((friend) => {
-          return (
-            <FriendCard
-              key={friend.id}
-              userId={friend.id}
-              familyName={friend.familyName}
-              firstName={friend.firstName}
-            />
-          );
-        })}
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-4 p-5 pb-2">フレンドリクエスト</h2>
-        <div>
-          <h3 className="text-l font-bold ml-3 mb-2 p-5 pb-2">
-            受信したリクエスト
-          </h3>
-          {receivedRequests.length !== 0 ? (
-            receivedRequests.map((request) => {
-              return <FriendCard userId={request.sender.id} familyName={request.sender.familyName} firstName={request.sender.firstName} requestDate={request.createdAt} request_id={request._id} key={request._id} />
-            })
+    // 全体を囲むコンテナ: 中央寄せ、最大幅、背景、影、パディング
+    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 sm:p-8 my-8">
+      {/* メインタイトル */}
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+        フレンド管理
+      </h1>
+
+      {/* フレンド一覧セクション */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-700 border-b pb-2 mb-6">
+          フレンド一覧
+        </h2>
+        <div className="space-y-4">
+          {user?.friends && user.friends.length > 0 ? (
+            user.friends.map((friend) => (
+              <FriendCard
+                key={friend.id}
+                userId={friend.id}
+                familyName={friend.familyName}
+                firstName={friend.firstName}
+                // isFriendCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
+              />
+            ))
           ) : (
-            <div className="pl-10">現在、リクエストは受信していません</div>
+            <p className="text-gray-500 italic pl-4">現在、フレンドはいません。</p>
           )}
         </div>
-        <div className="pb-15">
-          <h3 className="text-l font-bold ml-3 mb-2 p-5 pb-2">
+      </div>
+
+      {/* フレンドリクエストセクション */}
+      <div>
+        <h2 className="text-2xl font-semibold text-gray-700 border-b pb-2 mb-6">
+          フレンドリクエスト
+        </h2>
+
+        {/* 受信したリクエスト */}
+        <div className="mb-8">
+          <h3 className="text-xl font-medium text-gray-600 mb-4">
+            受信したリクエスト
+          </h3>
+          <div className="space-y-4">
+            {receivedRequests.length > 0 ? (
+              receivedRequests.map((request) => (
+                <FriendCard
+                  key={request._id} // MongoDBの_idをkeyに
+                  request_id={request._id} // FriendCardに渡すrequestのID
+                  userId={request.sender.id}
+                  familyName={request.sender.familyName}
+                  firstName={request.sender.firstName}
+                  requestDate={request.createdAt}
+                  // isRequestCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 italic pl-4">現在、受信したリクエストはありません。</p>
+            )}
+          </div>
+        </div>
+
+        {/* リクエスト送信フォーム */}
+        <div>
+          <h3 className="text-xl font-medium text-gray-600 mb-4">
             リクエスト送信
           </h3>
-          <div className="flex mx-10 gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <input
               type="text"
-              className={inputClass}
+              className="flex-grow block w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               value={requestId}
-              placeholder="リクエストするユーザーのid"
+              placeholder="リクエストするユーザーのID"
               onChange={(e) => setRequestId(e.target.value)}
+              aria-label="リクエストするユーザーのID" // アクセシビリティ向上のため
             />
             <button
-              className={
-                buttonClass +
-                (isRequestLoading ? " bg-gray-500" : " bg-indigo-600")
-              }
+              className={`inline-flex justify-center items-center px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white whitespace-nowrap flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out ${ // ★ whitespace-nowrap と flex-shrink-0 を追加
+                isRequestLoading
+                  ? "bg-gray-400 cursor-not-allowed" // ローディング中/無効状態
+                  : "bg-indigo-600 hover:bg-indigo-700" // 通常/ホバー状態
+              }`}
               onClick={sendFriendRequestHandler}
               disabled={isRequestLoading}
             >
-              {isRequestLoading ? "送信中" : "送信"}
+              {isRequestLoading ? (
+                <>
+                  {/* ローディングスピナー */}
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  送信中...
+                </>
+              ) : (
+                "送信"
+              )}
             </button>
           </div>
-          <div className="mx-10">{requestErrorMsg}</div>
+           {/* ステータスメッセージ */}
+           {requestStatus.message && (
+            <p className={`mt-3 text-sm ${getStatusMessageClass()}`}>
+              {requestStatus.message}
+            </p>
+          )}
         </div>
       </div>
     </div>

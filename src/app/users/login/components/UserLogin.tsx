@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Form from "@/components/Form";
 import { useUser } from "@/context/UserContext";
@@ -11,19 +11,25 @@ import type { userMsg } from "@/lib/actions/userActions";
 const UserLogin = () => {
   const [id, setId] = useState<string>("");
   const router = useRouter();
-  const { setUser } = useUser()
-  
-  const handleSubmit = async(state: any, formData: FormData): Promise<userMsg> =>{
+  const { setUser } = useUser();
+
+  const handleSubmit = async (
+    state: any,
+    formData: FormData
+  ): Promise<userMsg> => {
     const result = await loginUser(state, formData);
-    if(result.success){
+    if (result.success) {
       setUser(result.user);
       router.push("/deals/view");
-    } 
+    }
     return result;
-  }
-  
-  const [loginMsg, loginAction] = useActionState<userMsg,FormData>(handleSubmit,{ msg: "", success: false });
-  
+  };
+
+  const [loginMsg, loginAction] = useActionState<userMsg, FormData>(
+    handleSubmit,
+    { msg: "", success: false }
+  );
+
   const inputContents: inputContent[] = [
     {
       name: "id",
@@ -32,23 +38,30 @@ const UserLogin = () => {
       inputType: "id",
       state: {
         value: id,
-        setValue: setId
-      }
+        setValue: setId,
+      },
     },
     {
       name: "パスワード",
       id: "password",
       placeholder: "5文字以上32文字以下",
-      inputType: "password"
-    }
-  ]
+      inputType: "password",
+    },
+  ];
 
   return (
     <>
       <div>ログインページ</div>
-      <Form title="ログイン" inputContents={inputContents} state={loginMsg} action={loginAction} />
+
+      <div className="p-10">
+        <Form
+          title="ログイン"
+          inputContents={inputContents}
+          state={loginMsg}
+          action={loginAction}
+        />
+      </div>
     </>
   );
-
 };
 export default UserLogin;
