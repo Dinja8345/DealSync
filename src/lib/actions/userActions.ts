@@ -1,26 +1,28 @@
 "use server";
 
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import crypto from "crypto";
 import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
 import { cookies } from "next/headers";
-import type { sexTypes, User } from "@/types/user";
+import type { Friend, sexTypes, User } from "@/types/user";
+import type{ ObjectId } from "mongoose";
 
+// ログインしているユーザの情報を取得
 const getUserInfo = async () => {
   const cookieStore = await cookies();
   const sid = cookieStore.get("sid");
-  
-  if(!sid?.value){
+
+  if (!sid?.value) {
     return null;
   }
-  
+
   const sessionDbData = await axios.get(
     `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
     {
       headers: {
         "Content-Type": "application/json",
-        "sid": sid?.value,
+        sid: sid?.value,
       },
     }
   );
@@ -36,15 +38,15 @@ const getUserInfo = async () => {
     {
       headers: {
         "Content-Type": "application/json",
-        "query": "idToUser",
-        "id": id,
+        query: "idToUser",
+        id: id,
       },
     }
   );
 
   const user = userData.data.user;
-  
-  if(!user){
+
+  if (!user) {
     throw new Error("idに該当するuserが存在しません");
   }
 
@@ -52,12 +54,13 @@ const getUserInfo = async () => {
 };
 
 interface userMsg {
-  msg: string,
-  success: boolean,
-  user?: User
+  msg: string;
+  success: boolean;
+  user?: User;
 }
 
-const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
+// ユーザ登録
+const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
   const familyName = formData.get("familyName") as string;
   const firstName = formData.get("firstName") as string;
   const sex = formData.get("sex") as sexTypes;
@@ -73,7 +76,7 @@ const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
     return { msg: "メールアドレスが未入力です", success: false };
   } else if (password === "") {
     return { msg: "パスワードが未入力です", success: false };
-  } else if (id === ""){
+  } else if (id === "") {
     return { msg: "idが未入力です", success: false };
   }
 
@@ -85,43 +88,54 @@ const createUser = async(state: any, formData: FormData): Promise<userMsg> => {
 
   const hashedPass = await hashPassword(password);
 
-  try {    
-    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, { familyName, firstName, sex, email, password: hashedPass, id });
-    
-    const sid = crypto.randomBytes(32).toString("hex");
-      (await cookies()).set('sid',sid,{
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24, // 24時間
-        path: "/"
-      });
+  try {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, {
+      familyName,
+      firstName,
+      sex,
+      email,
+      password: hashedPass,
+      id,
+    });
 
-    const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
+    const sid = crypto.randomBytes(32).toString("hex");
+    (await cookies()).set("sid", sid, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24時間
+      path: "/",
+    });
+
+    const dbRes = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
+      { sid, id }
+    );
     return { msg: "登録に成功", success: true };
   } catch (e) {
     console.error(e);
     return { msg: "登録に失敗しました", success: false };
   }
+};
 
-}
-
-
-
-const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
+// ユーザログイン
+const loginUser = async (state: any, formData: FormData): Promise<userMsg> => {
   try {
     const id = formData.get("id") as string;
     const inputedPass = formData.get("password") as string;
-    const storedUser = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
-      headers: {
-        "Content-Type": "application/json",
-        "query": "idToUser",
-        "id": id,
-      },
-    });
-    
+    const storedUser = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          query: "idToUser",
+          id: id,
+        },
+      }
+    );
+
     //console.log(storedUser.data);
-    
+
     if (!storedUser.data.user) {
       return { msg: "そのidは登録されていません", success: false };
     }
@@ -130,93 +144,185 @@ const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
     const isMatch: boolean = await verifyPassword(inputedPass, storedPass);
     if (isMatch) {
       const sid = crypto.randomBytes(32).toString("hex");
-      (await cookies()).set('sid',sid,{
+      (await cookies()).set("sid", sid, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 60 * 60 * 24, // 24時間
-        path: "/"
+        path: "/",
       });
 
-      const dbRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`, { sid, id });
-      
+      const dbRes = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
+        { sid, id }
+      );
     } else {
       return { msg: "idまたはパスワードが一致していません", success: false };
     }
-    
-    return { msg: "ログイン完了", success: true, user: storedUser.data.user};
 
+    return { msg: "ログイン完了", success: true, user: storedUser.data.user };
   } catch (e) {
     console.error(e);
     return { msg: "ログイン中にエラーが発生しました。", success: false };
   }
-}
+};
 
-
-
-const getAllUsersInfo = async(): Promise<User[]> => {
-  const allUsersData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
-    headers: {
-      "Content-Type": "application/json",
-      "query": "all",
-    },
-  });
+// dbから全てのuser情報を配列にして返す
+const getAllUsersInfo = async (): Promise<User[]> => {
+  const allUsersData = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        query: "all",
+      },
+    }
+  );
 
   const allUsers = allUsersData.data.user;
   return allUsers;
-}
+};
 
-const addUserFriend = async(userId: string, otherUserId: string) => {
-  try{
+// 渡された2つのidのフレンドにお互いを追加する
+const addUserFriend = async (userId: string, otherUserId: string) => {
+  try {
     const isUserExisting = await isUserIdExisting(userId);
     const isOtherUserExisting = await isUserIdExisting(otherUserId);
-  
-    if(isUserExisting && isOtherUserExisting){
-      const userData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
-        headers: {
-          "Content-Type": "application/json",
-          "query": "idToUser",
-          "id": userId,
-        },
-      });
-      
-      const otherUserData = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
-        headers: {
-          "Content-Type": "application/json",
-          "query": "idToUser",
-          "id": otherUserId,
-        },
-      });
+
+    if (isUserExisting && isOtherUserExisting) {
+      const userData = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            query: "idToUser",
+            id: userId,
+          },
+        }
+      );
+
+      const otherUserData = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            query: "idToUser",
+            id: otherUserId,
+          },
+        }
+      );
 
       const userObjectId = userData.data.user._id;
       const otherUserObjectId = otherUserData.data.user._id;
 
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
-        {
-          query: "addFriend",
-          userObjectId: userObjectId,
-          otherUserObjectId: otherUserObjectId        
-        }
-      )
-    }else{
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, {
+        query: "addFriend",
+        userObjectId: userObjectId,
+        otherUserObjectId: otherUserObjectId,
+      });
+    } else {
       console.log("どちらかのidが存在しません");
     }
-  }catch(e){
+  } catch (e) {
     console.log(e);
   }
+};
+
+interface Msg {
+  message?: string;
+  error?: string;
+  newFriendRequest?: {
+    _id: string;
+    sender: string;
+    receiver: string;
+    createdAt?: string;
+  };
 }
 
-
-const userLogout = async() => {
-  (await cookies()).delete('sid');
+interface Msg {
+  message?: string;
+  error?: string;
+  newFriendRequest?: {
+    _id: string;
+    sender: string;
+    receiver: string;
+    createdAt?: string;
+  };
 }
+
+const sendFriendRequest = async (
+  senderId: string,
+  receiverId: string
+): Promise<Msg | undefined> => {
+  try {
+    const senderUserData = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          query: "idToUser",
+          id: senderId,
+        },
+      }
+    );
+    const sender = senderUserData.data.user;
+
+    const receiverData = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          query: "idToUser",
+          id: receiverId,
+        },
+      }
+    );
+    const receiver = receiverData.data.user;
+
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/friendRequest`,
+      {
+        sender: sender._id,
+        receiver: receiver._id,
+      }
+    );
+
+    return res.data;
+  } catch (e) {
+    const err = e as AxiosError<Msg>;
+    if (err.response?.data) return err.response.data;
+    console.log(e);
+    return undefined;
+  }
+};
+
+
+const userLogout = async () => {
+  (await cookies()).delete("sid");
+};
 
 // 受け取ったidから全てのuser.idを走査し、一致するものがあるかを返す
-const isUserIdExisting = async(id: string): Promise<boolean> => {
+const isUserIdExisting = async (id: string): Promise<boolean> => {
   const users = await getAllUsersInfo();
-  return users.some(user => user.id === id);
-}
+  return users.some((user) => user.id === id);
+};
 
-export { getUserInfo, createUser, loginUser, userLogout, getAllUsersInfo, addUserFriend, isUserIdExisting };
+// すでにフレンドかどうかを返す
+const isFriend = (myFriends: Friend[], targetId: string): boolean => {
+  return myFriends.some((friend) => {
+    return friend.id === targetId;
+  });
+};
+
+export {
+  getUserInfo,
+  createUser,
+  loginUser,
+  userLogout,
+  getAllUsersInfo,
+  addUserFriend,
+  isUserIdExisting,
+  isFriend,
+  sendFriendRequest
+};
 export type { userMsg };
-

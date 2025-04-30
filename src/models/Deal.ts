@@ -14,6 +14,6 @@ const dealSchema = new Schema({
   registrantId: { type: String, required: true },
 });
 
-const Deal: Model<any> = models?.Transaction || model('Transaction', dealSchema);
+const Deal: Model<any> = models?.Deal || model('Deal', dealSchema);
 
 export default Deal;

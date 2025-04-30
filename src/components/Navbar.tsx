@@ -28,6 +28,7 @@ const Navbar = () => {
           <a href="/deals/view" className={linkClass}>
             貸し借り一覧
           </a>
+          <a href="/users/friends" className={linkClass}>フレンド管理</a>
         </div>
         <div className="ml-auto flex justify-end">
           {user ? (
