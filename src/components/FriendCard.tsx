@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { addUserFriend, deleteFriendRequest } from "@/lib/actions/userActions";
 import { useUser } from "@/context/UserContext";
+import { calcUnpaidNetBalanceWithUser } from "@/lib/actions/dealActions";
 
 type FriendCardProps = {
   userId: string;
@@ -17,6 +18,7 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   requestDate,
   request_id,
 }) => {
+  const [ price, setPrice ] = useState(0);
   const { user } = useUser();
 
   const acceptFriendRequest = async () => {
@@ -29,6 +31,17 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   const declineFriendRequest = async () => {
     await deleteFriendRequest(request_id as string);
   };
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (user?.id) {
+        const balance = await calcUnpaidNetBalanceWithUser(user.id, userId);
+        setPrice(balance);
+      }
+    };
+  
+    fetchBalance();
+  }, [user]);
 
   return (
     <div className="bg-white shadow-md rounded-2xl p-4 w-full max-w-md mx-auto mb-4 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -73,7 +86,7 @@ export const FriendCard: React.FC<FriendCardProps> = ({
                 day: "2-digit",
               })
             ) : (
-              <>貸し借りの総額: ¥0</>
+              <>未返済貸し借りの総額: ¥{price ?? "0"}</>
             )}
           </div>
         </div>

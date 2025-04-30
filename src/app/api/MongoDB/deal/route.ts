@@ -2,14 +2,12 @@ import Deal from "@/models/Deal";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 
-// {$or: [{ lenderId: id }, { borrowerId: id }]}
 export async function GET(req: Request) {
   try {
     const headers = await req.headers;
-    const id = headers.get("id");
     const query = JSON.parse(headers.get("query") as string);
-    console.log(id, query);
-    if (!id || !query)
+
+    if (!query)
       return NextResponse.json(
         { error: "This request is invalid" },
         { status: 400 }

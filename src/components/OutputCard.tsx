@@ -50,9 +50,7 @@ const OutputCard = ({
       )
     )
 
-    // DB更新
     await changeDealStatus(_id, status);
-    // (エラーハンドリングはここに追加可能)
 
     // Confetti表示
     if(isChecked){
@@ -68,12 +66,10 @@ const OutputCard = ({
   return (
     <>
       {contents.map((content) => {
-        // 登録者IDに基づいてスタイルを決定
         const isUserRegistrant = id === content.registrantId;
         const cardBorderColor = isUserRegistrant ? "border-sky-400" : "border-yellow-400";
 
         return (
-          // 各カードのラッパー (親要素で grid や flex と gap を使うことを想定)
           <div key={content._id} className="w-full max-w-md mx-auto">
             {/* カード本体 */}
             <div
@@ -126,7 +122,7 @@ const OutputCard = ({
                  </div>
                  <div className="flex justify-between">
                     <span className="font-medium text-gray-700">期日:</span>
-                    <span>{content.dueDate || "未設定"}</span> {/* 未設定の場合の表示 */}
+                    <span>{content.dueDate || "無期限"}</span> {/* 未設定の場合の表示 */}
                  </div>
                  {content.memo && ( // メモがある場合のみ表示
                     <div className="pt-1">
@@ -169,7 +165,6 @@ const OutputCard = ({
         );
       })}
 
-      {/* Confettiコンポーネント (変更しない) */}
       <Confetti
         showRightConfetti={showRightConfetti}
         setShowRightConfetti={setShowRightConfetti}

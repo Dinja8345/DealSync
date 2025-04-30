@@ -4,23 +4,21 @@ import type { ReactNode } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
-  closeModal?: (...args: any[]) => any; // closeModalはオプションのまま
+  closeModal?: (...args: any[]) => any;
   children: ReactNode;
 }
 
 const Modal = ({ isOpen, closeModal, children }: ModalProps) => {
-  // isOpenがfalseなら何もレンダリングしない
   if (!isOpen) {
     return null;
   }
 
-  // モーダルが開いている場合のJSX
   return (
     // オーバーレイ: 画面全体を覆い、背景を暗くする
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 transition-opacity duration-300 ease-in-out"
       // オーバーレイクリックで閉じる場合 (オプション)
-      // onClick={closeModal}
+      onClick={closeModal}
     >
       {/* モーダルコンテンツエリア: クリックイベントが親(オーバーレイ)に伝播しないように */}
       <div
@@ -40,7 +38,7 @@ const Modal = ({ isOpen, closeModal, children }: ModalProps) => {
             </svg>
           </button>
         )}
-        {/* モーダルの中身 */}
+
         {children}
       </div>
     </div>

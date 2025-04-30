@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { isUserIdExisting, userMsg } from "./userActions";
-import type { tranStatus, cardMsg } from "@/types/card";
+import type { tranStatus, cardMsg, deal } from "@/types/card";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/deal`
 
@@ -145,6 +145,37 @@ const deleteDeal = async(_id: string): Promise<userMsg> => {
   }
 }
 
+const calcUnpaidNetBalanceWithUser = async(myId: string, friendId: string): Promise<number> => {
+  try{
+    const query = `{"$or": [{ "lenderId": "${myId}", "borrowerId": "${friendId}" }, { "borrowerId": "${myId}", "lenderId": "${friendId}" }]}`;
+    const res = await axios.get(url,{
+      headers: {
+        "Content-Type": "application/json",
+        query: query,
+      },
+    });
+    
+    const deals: deal[] = res.data.deals;
 
+    console.log(deals);
 
-export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal };
+    let result = 0;
+
+    for(const deal of deals){
+      if(deal.status === "未返済"){
+        if(deal.lenderId === myId){
+          result += Number(deal.money);
+        }else{
+          result -= Number(deal.money);
+        }
+      }
+    }
+
+    return result;
+  }catch(e){
+    console.log(e);
+    return 0;
+  }
+}
+
+export { getCardsInfo, addDeal, editDeal, changeDealStatus, deleteDeal, calcUnpaidNetBalanceWithUser };
