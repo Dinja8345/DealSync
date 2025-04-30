@@ -120,7 +120,8 @@ const loginUser = async(state: any, formData: FormData): Promise<userMsg> => {
       },
     });
     
-    console.log(storedUser.data);
+    //console.log(storedUser.data);
+    
     if (!storedUser.data.user) {
       return { msg: "そのidは登録されていません", success: false };
     }
@@ -183,7 +184,7 @@ const addUserFriend = async(userId: string, otherUserId: string) => {
         headers: {
           "Content-Type": "application/json",
           "query": "idToUser",
-          "id": userId,
+          "id": otherUserId,
         },
       });
 
@@ -193,10 +194,12 @@ const addUserFriend = async(userId: string, otherUserId: string) => {
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
         {
           query: "addFriend",
-          userObjectId,
-          otherUserObjectId        
+          userObjectId: userObjectId,
+          otherUserObjectId: otherUserObjectId        
         }
       )
+    }else{
+      console.log("どちらかのidが存在しません");
     }
   }catch(e){
     console.log(e);

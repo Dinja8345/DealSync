@@ -2,17 +2,22 @@ import { NextResponse } from "next/server";
 
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import { cookies } from "next/headers";
 
 export async function GET(req: Request){
     try{
         const headers = await req.headers;
         const query = headers.get("query");
+        
+        //idから一致するuserを取得
         if(query === "idToUser"){
             const id = headers.get("id");
             if(!id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
             await connectDB();
-            const user = await User.findOne({ id: id });
+            const user = await User.findOne({ id: id }).populate({
+                path: 'friends',
+                select: 'familyName firstName id'
+            });
+
             if(!user){
                 return NextResponse.json({ error: "This email is invalid" }, { status: 400 });
             }else{
@@ -21,6 +26,7 @@ export async function GET(req: Request){
                     user: user
                 });
             }
+        //登録されている全てのuserを取得
         }else if(query === "all"){
             await connectDB();
             const users = await User.find();
@@ -30,6 +36,7 @@ export async function GET(req: Request){
             });
         }
     }catch(e){
+        //console.log(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
     }
 }

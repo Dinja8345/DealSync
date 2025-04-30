@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose"
+
 export type newUser = {
     id: string
     email: string,
@@ -14,7 +16,16 @@ export type User = {
     familyName: string,
     firstName: string,
     sex: sexTypes,
+    friends: Friend[]
     _id: string,
 }
+
+export type Friend = {
+    id: string,
+    familyName: string,
+    firstName: string,
+    _id: string,    
+}
+
 
 export type sexTypes = "男性" | "女性" | "その他"
