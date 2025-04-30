@@ -6,7 +6,6 @@ import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
 import { cookies } from "next/headers";
 import type { Friend, sexTypes, User } from "@/types/user";
-import type{ ObjectId } from "mongoose";
 
 // ログインしているユーザの情報を取得
 const getUserInfo = async () => {
@@ -239,17 +238,6 @@ interface Msg {
   };
 }
 
-interface Msg {
-  message?: string;
-  error?: string;
-  newFriendRequest?: {
-    _id: string;
-    sender: string;
-    receiver: string;
-    createdAt?: string;
-  };
-}
-
 const sendFriendRequest = async (
   senderId: string,
   receiverId: string
@@ -296,6 +284,42 @@ const sendFriendRequest = async (
   }
 };
 
+const getFriendRequests = async (_id: string) => {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/friendRequest`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          _id: _id,
+        },
+      }
+    );
+
+    return res.data.friendRequests;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const deleteFriendRequest = async (_id: string) => {
+  try {
+    const payload = {
+      _id: _id,
+    };
+
+    const res = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/friendRequest`,
+      {
+        data: payload,
+      }
+    );
+
+    return res.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 const userLogout = async () => {
   (await cookies()).delete("sid");
@@ -323,6 +347,8 @@ export {
   addUserFriend,
   isUserIdExisting,
   isFriend,
-  sendFriendRequest
+  sendFriendRequest,
+  getFriendRequests,
+  deleteFriendRequest,
 };
 export type { userMsg };

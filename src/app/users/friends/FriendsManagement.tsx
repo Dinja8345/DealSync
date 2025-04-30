@@ -1,17 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FriendCard } from "@/components/FriendCard";
 import { useUser } from "@/context/UserContext";
 import {
+  getFriendRequests,
   isFriend,
   isUserIdExisting,
   sendFriendRequest,
 } from "@/lib/actions/userActions";
+import type { FriendRequest } from "@/types/user";
 
 const FriendsManagement = () => {
   const [requestId, setRequestId] = useState("");
   const [requestErrorMsg, setRequestErrorMsg] = useState("");
+  const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [isRequestLoading, setIsRequestLoading] = useState(false);
   const { user } = useUser();
 
@@ -27,7 +30,6 @@ const FriendsManagement = () => {
 
           if (!result) {
             const res = await sendFriendRequest(user.id, requestId);
-            console.log(res);
 
             if (res?.error === "Conflict") {
               setRequestErrorMsg(
@@ -41,6 +43,7 @@ const FriendsManagement = () => {
           } else {
             setRequestErrorMsg(result + "このユーザーはすでにフレンドです。");
           }
+
         } else {
           setRequestErrorMsg("入力されたidと一致するユーザーが存在しません。");
         }
@@ -50,6 +53,14 @@ const FriendsManagement = () => {
       setIsRequestLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      getFriendRequests(user._id).then((result) => {
+        setReceivedRequests(result);
+      });
+    }
+  }, []);
 
   const inputClass =
     "flex-[5] bg-teal-50 rounded-sm outline-2 outline-zinc-400 ";
@@ -75,26 +86,43 @@ const FriendsManagement = () => {
       </div>
       <div>
         <h2 className="text-xl font-bold mb-4 p-5 pb-2">フレンドリクエスト</h2>
-        <div className="flex mx-10 gap-2">
-          <input
-            type="text"
-            className={inputClass}
-            value={requestId}
-            placeholder="リクエストするユーザーのid"
-            onChange={(e) => setRequestId(e.target.value)}
-          />
-          <button
-            className={
-              buttonClass +
-              (isRequestLoading ? " bg-gray-500" : " bg-indigo-600")
-            }
-            onClick={sendFriendRequestHandler}
-            disabled={isRequestLoading}
-          >
-            {isRequestLoading ? "送信中" : "送信"}
-          </button>
+        <div>
+          <h3 className="text-l font-bold ml-3 mb-2 p-5 pb-2">
+            受信したリクエスト
+          </h3>
+          {receivedRequests.length !== 0 ? (
+            receivedRequests.map((request) => {
+              return <FriendCard userId={request.sender.id} familyName={request.sender.familyName} firstName={request.sender.firstName} requestDate={request.createdAt} request_id={request._id} key={request._id} />
+            })
+          ) : (
+            <div className="pl-10">現在、リクエストは受信していません</div>
+          )}
         </div>
-        <div className="mx-10">{requestErrorMsg}</div>
+        <div className="pb-15">
+          <h3 className="text-l font-bold ml-3 mb-2 p-5 pb-2">
+            リクエスト送信
+          </h3>
+          <div className="flex mx-10 gap-2">
+            <input
+              type="text"
+              className={inputClass}
+              value={requestId}
+              placeholder="リクエストするユーザーのid"
+              onChange={(e) => setRequestId(e.target.value)}
+            />
+            <button
+              className={
+                buttonClass +
+                (isRequestLoading ? " bg-gray-500" : " bg-indigo-600")
+              }
+              onClick={sendFriendRequestHandler}
+              disabled={isRequestLoading}
+            >
+              {isRequestLoading ? "送信中" : "送信"}
+            </button>
+          </div>
+          <div className="mx-10">{requestErrorMsg}</div>
+        </div>
       </div>
     </div>
   );

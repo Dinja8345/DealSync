@@ -1,6 +1,32 @@
+import FriendRequest from "@/models/FriendRequest";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import FriendRequest from "@/models/FriendRequest";
+
+export async function GET(req: Request){
+    try{
+        const headers = await req.headers;
+        const _id = headers.get("_id"); //ユーザーのObjectId
+        if(!_id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+
+        await connectDB();
+
+        const friendRequests = await FriendRequest.find({receiver: _id}).populate({
+            path: 'sender',
+            select: 'familyName firstName id'
+        });
+
+        //console.log(friendRequests);
+
+        return NextResponse.json({
+            message: "get FriendRequests",
+            friendRequests: friendRequests
+        });
+
+    }catch(e){
+        console.error(e);
+        return NextResponse.json({ error: e }, { status: 500 });
+    }
+}
 
 
 export async function POST(req: Request){
@@ -39,5 +65,26 @@ export async function POST(req: Request){
     }catch(e){
         console.error(e);
         return NextResponse.json({ error: "Error" }, { status: 500 });
+    }
+}
+
+
+export async function DELETE(req: Request){
+    try{
+        const body = await req.json();
+        const { _id } = body;
+        if(!_id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        
+        await connectDB();
+
+        const deletedRequest = await FriendRequest.deleteOne({_id: _id});
+
+        if(deletedRequest){
+            return NextResponse.json({ message: "FriendRequest deleted", deletedRequest });
+        }else{
+            return NextResponse.json({ error: "This _id is invalid"}, { status: 400 });
+        }
+    }catch(e){
+        return NextResponse.json({ error: e }, { status: 500 });
     }
 }

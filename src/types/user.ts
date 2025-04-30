@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose"
+import type { ObjectId } from "mongoose";
 
 export type newUser = {
     id: string
@@ -25,6 +25,19 @@ export type Friend = {
     familyName: string,
     firstName: string,
     _id: string,    
+}
+
+export type RequestSender = {
+    familyName: string,
+    firstName: string,
+    id: string,
+}
+
+export type FriendRequest = {
+    sender: RequestSender,
+    receiver: ObjectId,
+    createdAt: Date,
+    _id: string,
 }
 
 
