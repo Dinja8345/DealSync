@@ -157,8 +157,6 @@ const calcUnpaidNetBalanceWithUser = async(myId: string, friendId: string): Prom
     
     const deals: deal[] = res.data.deals;
 
-    console.log(deals);
-
     let result = 0;
 
     for(const deal of deals){

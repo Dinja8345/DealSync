@@ -81,27 +81,24 @@ const FriendsManagement = () => {
   };
 
   useEffect(() => {
-    if (user?._id) { // userとuser._idが存在するか確認
+    if (user?._id) {
       getFriendRequests(user._id)
         .then((result) => {
-          if (result) { // resultがnullやundefinedでないことを確認
+          if (result) {
              setReceivedRequests(result);
           } else {
-             setReceivedRequests([]); // データがない場合は空配列を設定
-             console.log("受信したフレンドリクエストはありませんでした。");
+             setReceivedRequests([]);
           }
         })
         .catch(error => {
            console.error("Failed to fetch friend requests:", error);
-           setReceivedRequests([]); // エラー時も空配列を設定
+           setReceivedRequests([]);
         });
     } else {
-      // ユーザー情報がまだ読み込まれていない、または存在しない場合
       setReceivedRequests([]);
     }
-  }, [user]); // userオブジェクト全体を依存関係に含める
+  }, [user]);
 
-  // ステータスメッセージのスタイルを決定
   const getStatusMessageClass = () => {
     switch (requestStatus.type) {
       case 'error':
@@ -111,7 +108,7 @@ const FriendsManagement = () => {
       case 'info':
           return 'text-blue-600';
       default:
-        return 'text-gray-500'; // idle または他のケース
+        return 'text-gray-500';
     }
   };
 

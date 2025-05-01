@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { addUserFriend, deleteFriendRequest } from "@/lib/actions/userActions";
+import { addUserFriend, deleteFriendRequest, getUserInfo } from "@/lib/actions/userActions";
 import { useUser } from "@/context/UserContext";
 import { calcUnpaidNetBalanceWithUser } from "@/lib/actions/dealActions";
 
@@ -19,17 +19,25 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   request_id,
 }) => {
   const [ price, setPrice ] = useState(0);
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const acceptFriendRequest = async () => {
     if (user) {
       await addUserFriend(user.id, userId);
     }
     await deleteFriendRequest(request_id as string);
+
+    // グローバルステートの情報を更新
+    const updatedUser = await getUserInfo();
+    setUser(updatedUser);
   };
 
   const declineFriendRequest = async () => {
     await deleteFriendRequest(request_id as string);
+
+    // グローバルステートの情報を更新
+    const updatedUser = await getUserInfo();
+    setUser(updatedUser);
   };
 
   useEffect(() => {
