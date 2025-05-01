@@ -25,6 +25,8 @@ const ViewDeals = () => {
   const [modalDueDate, setModalDueDate] = useState<string>("");
   const [modalMemo, setModalMemo] = useState<string>("");
   const [msg, setMsg] = useState<userMsg>({ msg: "", success: false });
+  const [selector, setSelector] = useState("");
+  const [filterId, setFilterId] = useState("");
   const { user } = useUser();
 
   const editCheck = (formData: FormData) => {
@@ -131,21 +133,80 @@ const ViewDeals = () => {
   }, [modalContent]);
 
   const modalContents = [
-    { name: "形態", id: "format", options: ["貸し", "借り"], state: { value: modalFormat, setValue: setModalFormat } },
-    { name: "名前", id: "name", placeholder: "相手の名前", inputType: "text", state: { value: modalName, setValue: setModalName } },
-    { name: "金額", id: "money", placeholder: "金額（円）", inputType: "number", state: { value: modalMoney, setValue: setModalMoney } },
-    { name: "メモ", id: "memo", placeholder: "任意", inputType: "text", state: { value: modalMemo, setValue: setModalMemo } },
-    { name: "期日", id: "dueDate", placeholder: "期日", inputType: "date", state: { value: modalDueDate, setValue: setModalDueDate } },
+    {
+      name: "形態",
+      id: "format",
+      options: ["貸し", "借り"],
+      state: { value: modalFormat, setValue: setModalFormat },
+    },
+    {
+      name: "名前",
+      id: "name",
+      placeholder: "相手の名前",
+      inputType: "text",
+      state: { value: modalName, setValue: setModalName },
+    },
+    {
+      name: "金額",
+      id: "money",
+      placeholder: "金額（円）",
+      inputType: "number",
+      state: { value: modalMoney, setValue: setModalMoney },
+    },
+    {
+      name: "メモ",
+      id: "memo",
+      placeholder: "任意",
+      inputType: "text",
+      state: { value: modalMemo, setValue: setModalMemo },
+    },
+    {
+      name: "期日",
+      id: "dueDate",
+      placeholder: "期日",
+      inputType: "date",
+      state: { value: modalDueDate, setValue: setModalDueDate },
+    },
   ];
 
   return (
     <div className="container mx-auto px-4 py-8">
       {msg.msg && (
-        <div className={`mb-4 p-4 rounded-md text-center ${msg.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <div
+          className={`mb-4 p-4 rounded-md text-center ${
+            msg.success
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
           {msg.msg}
         </div>
       )}
 
+      {/* セレクター */}
+      <div className="flex justify-end mb-4 gap-2">
+        {selector === "otherCard" && (
+          <input
+            type="text"
+            value={filterId}
+            onChange={(e) => setFilterId(e.target.value)}
+            placeholder="検索するid"
+            className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+          />
+        )}
+
+        <select
+          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+          value={selector}
+          onChange={(e) => setSelector(e.target.value)}
+        >
+          <option value="">すべて表示</option>
+          <option value="myCard">自分が登録</option>
+          <option value="otherCard">他人が登録</option>
+        </select>
+      </div>
+
+      {/* カード　*/}
       <div className="space-y-6">
         {contents.length > 0 ? (
           <OutputCard
@@ -156,9 +217,13 @@ const ViewDeals = () => {
             setEditModalContent={setModalContent}
             openDeleteModal={openDeleteModal}
             setDeleteContentId={setDeleteContentId}
+            selector={selector}
+            filterId={filterId}
           />
         ) : (
-          <p className="text-center text-gray-500">表示できる取引情報はありません。</p>
+          <p className="text-center text-gray-500">
+            表示できる取引情報はありません。
+          </p>
         )}
       </div>
 
@@ -174,8 +239,12 @@ const ViewDeals = () => {
       {/* 削除確認モーダル */}
       <Modal isOpen={isDeleteModalOpen} closeModal={closeDeleteModal}>
         <div className="flex flex-col items-center justify-center p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">本当に削除しますか？</h3>
-          <p className="text-gray-600 mb-6 text-center">この操作は元に戻せません。</p>
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+            本当に削除しますか？
+          </h3>
+          <p className="text-gray-600 mb-6 text-center">
+            この操作は元に戻せません。
+          </p>
           <div className="flex space-x-4">
             <button
               className="px-6 py-2 bg-red-600 text-white font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out"
@@ -203,13 +272,16 @@ const ViewDeals = () => {
           title="貸し借り編集"
           formClass="p-4"
           inputContents={modalContents}
+          btnText="編集内容を保存"
           state={msg}
           action={editCheck}
         />
         {/* 編集確認モーダル（ネスト） */}
         <Modal isOpen={isEditCheckModalOpen} closeModal={closeEditCheckModal}>
           <div className="flex flex-col items-center justify-center p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-6">変更を保存しますか？</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">
+              変更を保存しますか？
+            </h3>
             <div className="flex space-x-4">
               <button
                 onClick={handleEdit}

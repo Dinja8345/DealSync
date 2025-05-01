@@ -1,12 +1,12 @@
 import Confetti from "@/components/Confetti";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { changeDealStatus } from "@/lib/actions/dealActions";
 import { useUser } from "@/context/UserContext";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { deal, formats, tranStatus } from "@/types/card";
+import { isFriend } from "@/lib/actions/userActions";
 
 // 取引が他人が登録したものだった場合、dbに登録されている形式と逆のものを返す
-// (この関数は変更しない)
 const invertDealType = (format: formats): formats => {
   if (format === "借り") {
     return "貸し";
@@ -15,7 +15,6 @@ const invertDealType = (format: formats): formats => {
   }
 };
 
-// Propsインターフェース (変更しない)
 export interface outputCardProps {
   id?: string;
   contents: deal[];
@@ -24,6 +23,8 @@ export interface outputCardProps {
   setEditModalContent: Dispatch<SetStateAction<deal | undefined>>;
   openDeleteModal: () => void;
   setDeleteContentId: Dispatch<SetStateAction<string>>;
+  selector: string;
+  filterId: string;
 }
 
 const OutputCard = ({
@@ -34,8 +35,10 @@ const OutputCard = ({
   setEditModalContent,
   openDeleteModal,
   setDeleteContentId,
+  selector,
+  filterId,
 }: outputCardProps) => {
-  // ステータス変更ロジック (変更しない)
+
   const changeStatus = async (
     e: ChangeEvent<HTMLInputElement>,
     content: deal
@@ -58,14 +61,40 @@ const OutputCard = ({
     }
   };
 
-  // Confetti State (変更しない)
+  const [displayedContents , setDisplayedContents] = useState<deal[]>([]);
   const [showRightConfetti, setShowRightConfetti] = useState<boolean>(false);
   const [showLeftConfetti, setShowLeftConfetti] = useState<boolean>(false);
   const { user } = useUser();
 
+  useEffect(() => {
+    if(user){
+      if(selector === ""){
+        setDisplayedContents(contents);
+      }else if(selector === "myCard"){
+        const filteredContents = contents.filter(content => {
+          return content.registrantId === user?.id;
+        });
+  
+        setDisplayedContents(filteredContents);
+      }else if(selector === "otherCard"){
+        const filteredContents = contents.filter(content => {
+          if(content.registrantId !== user?.id){
+            if(filterId === ""){
+              return true;
+            }else{
+              return content.registrantId.includes(filterId);
+            }
+          }
+        });
+
+        setDisplayedContents(filteredContents);
+      }
+    }
+  },[contents, selector, filterId])
+
   return (
     <>
-      {contents.map((content) => {
+      {displayedContents.map((content) => {
         const isUserRegistrant = id === content.registrantId;
         let cardBorderColor = "";
         if (user) {
@@ -75,7 +104,7 @@ const OutputCard = ({
           // ターゲットがフレンドならtargetが空配列ではなくなる
           const target = friends.filter((friend) => {
             return friend.id === targetId;
-          })
+          });
 
           if (isUserRegistrant) {
             cardBorderColor = "border-sky-400";

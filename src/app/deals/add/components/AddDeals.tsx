@@ -135,6 +135,7 @@ const Addtransactions = () => {
             <InputCard
               title="新しい記録"
               inputContents={contents}
+              btnText="新しい取引を保存"
               state={msg}
               action={createItemAction}
             />

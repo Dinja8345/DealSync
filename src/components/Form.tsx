@@ -8,6 +8,7 @@ const Form: React.FC<formProps> = ({
   title,
   formClass,
   inputContents,
+  btnText,
   state,
   action,
 }) => {
@@ -96,7 +97,7 @@ const Form: React.FC<formProps> = ({
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
             // ローディング状態などを考慮する場合は disabled 属性や表示内容を変更
           >  
-            編集内容を保存
+            {btnText}
           </button>
         </div>
       </form>
