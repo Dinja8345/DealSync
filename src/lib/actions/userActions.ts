@@ -238,6 +238,8 @@ interface Msg {
   };
 }
 
+
+// フレンドリクエストをdbに登録
 const sendFriendRequest = async (
   senderId: string,
   receiverId: string
@@ -284,6 +286,8 @@ const sendFriendRequest = async (
   }
 };
 
+
+// 
 const getFriendRequests = async (_id: string) => {
   try {
     const res = await axios.get(
@@ -302,7 +306,7 @@ const getFriendRequests = async (_id: string) => {
   }
 };
 
-const deleteFriendRequest = async (_id: string) => {
+const deleteFriendRequest = async(_id: string) => {
   try {
     const payload = {
       _id: _id,
@@ -317,9 +321,72 @@ const deleteFriendRequest = async (_id: string) => {
 
     return res.data;
   } catch (e) {
-    console.error(e);
+    console.log(e);
   }
 };
+
+
+export interface deleteMsg{
+  success: boolean;
+  msg: string;
+}
+
+// お互いのフレンドから削除
+const deleteFriend = async(requesterId: string, targetId: string): Promise<deleteMsg> => {
+
+  try{
+    
+    const isRequesterExisting = await isUserIdExisting(requesterId);
+    if(!isRequesterExisting){
+      return { success: false, msg: "エラー: あなたのidが存在しません。" };
+    }
+
+    const isTargetExisting = await isUserIdExisting(targetId);
+    if(!isTargetExisting){
+      return { success: false, msg: "指定された相手のidが存在しません。" };
+    }
+
+    const requesterInfo = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          query: "idToUser",
+          id: requesterId
+        }
+      }
+    );
+
+    const requesterFriends = requesterInfo.data.user.friends;
+
+    const targetInfo = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          query: "idToUser",
+          id: targetId
+        }
+      }
+    );
+
+    const targetFriends = targetInfo.data.user.friends;
+
+    const result = await axios.put(
+       `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
+        query: "deleteFriend",
+        requesterId: requesterId, 
+        targetId: targetId,
+        requesterFriends: requesterFriends,
+        targetFriends: targetFriends
+       });
+
+    return { success: true, msg: "フレンド削除に成功しました。" };
+  }catch(e){
+    console.log(e);
+    return { success: false, msg: "フレンド削除中にエラー" };
+  }
+}
 
 const userLogout = async () => {
   (await cookies()).delete("sid");
@@ -350,5 +417,6 @@ export {
   sendFriendRequest,
   getFriendRequests,
   deleteFriendRequest,
+  deleteFriend,
 };
 export type { userMsg };

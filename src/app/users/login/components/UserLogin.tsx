@@ -57,6 +57,7 @@ const UserLogin = () => {
           inputContents={inputContents}
           state={loginMsg}
           action={loginAction}
+          btnText="ログイン"
         />
       </div>
     </>

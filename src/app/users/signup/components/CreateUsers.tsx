@@ -91,7 +91,7 @@ const CreateUsers = () => {
   return (
     <div className="flex justify-center">
       <div className="w-xl">
-        <Form state={state} action={createUserAction} title="ユーザー新規登録" inputContents={contents} />
+        <Form state={state} action={createUserAction} title="ユーザー新規登録" inputContents={contents} btnText="登録" />
       </div>
     </div>
   );

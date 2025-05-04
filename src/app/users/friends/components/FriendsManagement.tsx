@@ -63,11 +63,12 @@ const FriendsManagement = () => {
 
       const res = await sendFriendRequest(user.id, requestId);
 
+      // すでに同じリクエストが存在したとき
       if (res?.error === "Conflict") {
         setRequestStatus({ type: 'info', message: "そのユーザーにはすでにリクエストを送信済みです。" }); // Use 'info' type
       } else if (res?.newFriendRequest) {
         setRequestStatus({ type: 'success', message: "フレンドリクエストを送信しました。" });
-        setRequestId(""); // 送信成功時にID入力欄をクリア
+        setRequestId("");
       } else {
         setRequestStatus({ type: 'error', message: "リクエスト送信中にエラーが発生しました。" });
       }
@@ -131,7 +132,7 @@ const FriendsManagement = () => {
             user.friends.map((friend) => (
               <FriendCard
                 key={friend.id}
-                userId={friend.id}
+                friendId={friend.id}
                 familyName={friend.familyName}
                 firstName={friend.firstName}
                 // isFriendCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
@@ -160,7 +161,7 @@ const FriendsManagement = () => {
                 <FriendCard
                   key={request._id} // MongoDBの_idをkeyに
                   request_id={request._id} // FriendCardに渡すrequestのID
-                  userId={request.sender.id}
+                  friendId={request.sender.id}
                   familyName={request.sender.familyName}
                   firstName={request.sender.firstName}
                   requestDate={request.createdAt}

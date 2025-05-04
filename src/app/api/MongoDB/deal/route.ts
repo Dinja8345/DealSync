@@ -102,7 +102,6 @@ export async function PUT(req: Request) {
         money,
         dueDate,
         status,
-        memo,
       };
 
       if (Object.values(requiredFields).some((v) => !v))
@@ -121,7 +120,7 @@ export async function PUT(req: Request) {
             money: money,
             dueDate: dueDate,
             status: status,
-            memo: memo,
+            memo: memo ?? ""
           },
         }
       );

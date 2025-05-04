@@ -4,7 +4,6 @@ import { changeDealStatus } from "@/lib/actions/dealActions";
 import { useUser } from "@/context/UserContext";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { deal, formats, tranStatus } from "@/types/card";
-import { isFriend } from "@/lib/actions/userActions";
 
 // 取引が他人が登録したものだった場合、dbに登録されている形式と逆のものを返す
 const invertDealType = (format: formats): formats => {

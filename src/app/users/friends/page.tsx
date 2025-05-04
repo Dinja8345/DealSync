@@ -1,4 +1,4 @@
-import FriendsManagement from "./FriendsManagement";
+import FriendsManagement from "./components/FriendsManagement";
 
 export default function Home(){
   return (
