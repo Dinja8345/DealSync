@@ -144,6 +144,7 @@ export async function PUT(req: Request){
                 console.log(e);
                 return NextResponse.json({ error: e }, { status: 500 });
             }
+        // 渡されたidに対応するuserにimgUrlをセット/変更
         }else if(query === "changeUserIcon"){
             const { imgUrl, id }: { imgUrl: string, id: string } = body;
             
