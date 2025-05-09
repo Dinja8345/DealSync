@@ -25,7 +25,8 @@ export type Friend = {
     id: string,
     familyName: string,
     firstName: string,
-    _id: string,    
+    iconUrl?: string,
+    _id: string,
 }
 
 export type RequestSender = {

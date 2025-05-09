@@ -15,7 +15,7 @@ export async function GET(req: Request){
             await connectDB();
             const user = await User.findOne({ id: id }).populate({
                 path: 'friends',
-                select: 'familyName firstName id'
+                select: 'familyName firstName id iconUrl'
             });
 
             if(!user){

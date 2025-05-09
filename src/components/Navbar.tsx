@@ -1,11 +1,11 @@
 "use client";
 
+import UserIcon from "@/components/UserIcon";
 import { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { userLogout } from "@/lib/actions/userActions";
 import { redirect } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { div } from "framer-motion/client";
 
 const Navbar = () => {
   const { user } = useUser();
@@ -22,8 +22,7 @@ const Navbar = () => {
   const toggleProfileMenu = () => isSetProfileMenuOpen(!isProfileMenuOpen);
 
   const linkClass = "block px-4 py-2 text-gray-100 hover:bg-stone-700 rounded";
-  const iconClass = "w-12 h-12 rounded-full object-cover cursor-pointer"; // 48px に拡大
-
+  
   return (
     <>
       {/* ナビゲーションバー */}
@@ -44,29 +43,24 @@ const Navbar = () => {
               <a href="/deals/view" className={linkClass}>
                 貸し借り一覧
               </a>
-              <a href="/users/friends" className={linkClass}>
-                フレンド管理
-              </a>
             </div>
             <div className="flex items-center space-x-4">
               {user ? (
                 <div className="relative">
-                  <img
-                    src={user.iconUrl}
-                    alt="ユーザーアイコン"
-                    className={iconClass}
-                    onClick={toggleProfileMenu}
-                  />
+                  <UserIcon familyName={user.familyName} firstName={user.firstName} iconUrl={user.iconUrl} onClick={toggleProfileMenu} ></UserIcon>
                   {isProfileMenuOpen && (
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-stone-800 rounded shadow-lg z-50 min-w-[140px] py-2">
                       <a
-                        href="/users/manegement"
+                        href="/users/management"
                         className={linkClass}
                         onClick={() => {
                           isSetProfileMenuOpen(false);
                         }}
                       >
                         ユーザ管理
+                      </a>
+                      <a href="/users/friends" className={linkClass}>
+                        フレンド管理
                       </a>
                       <a
                         href="/users/logout"

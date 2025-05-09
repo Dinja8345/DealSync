@@ -135,6 +135,7 @@ const FriendsManagement = () => {
                 friendId={friend.id}
                 familyName={friend.familyName}
                 firstName={friend.firstName}
+                iconUrl={friend.iconUrl}
                 // isFriendCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
               />
             ))
@@ -164,6 +165,7 @@ const FriendsManagement = () => {
                   friendId={request.sender.id}
                   familyName={request.sender.familyName}
                   firstName={request.sender.firstName}
+
                   requestDate={request.createdAt}
                   // isRequestCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
                 />

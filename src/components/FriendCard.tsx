@@ -1,3 +1,4 @@
+import UserIcon from "@/components/UserIcon";
 import React, { useEffect, useState } from "react";
 import { addUserFriend, deleteFriend, deleteFriendRequest, getUserInfo } from "@/lib/actions/userActions";
 import { useUser } from "@/context/UserContext";
@@ -8,6 +9,7 @@ type FriendCardProps = {
   friendId: string;
   familyName: string;
   firstName: string;
+  iconUrl?: string;
   requestDate?: Date;
   request_id?: string;
 };
@@ -16,6 +18,7 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   friendId,
   familyName,
   firstName,
+  iconUrl,
   requestDate,
   request_id,
 }) => {
@@ -66,10 +69,7 @@ export const FriendCard: React.FC<FriendCardProps> = ({
       <div className="flex justify-between items-center h-full">
         {/* 左側：ユーザー情報 */}
         <div className="flex items-center gap-4 h-full">
-          <div className="bg-blue-100 text-blue-800 font-bold rounded-full h-12 w-12 flex items-center justify-center text-xl">
-            {familyName[0]}
-            {firstName[0]}
-          </div>
+          <UserIcon familyName={familyName} firstName={firstName} iconUrl={iconUrl}></UserIcon>
           <div className="flex flex-col justify-center h-full">
             <span className="text-lg font-semibold">
               {familyName} {firstName}
