@@ -9,6 +9,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   id: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  iconUrl: { type: String, required: false },
   friends: [
     {
       type: mongoose.Types.ObjectId,

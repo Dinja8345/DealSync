@@ -144,8 +144,27 @@ export async function PUT(req: Request){
                 console.log(e);
                 return NextResponse.json({ error: e }, { status: 500 });
             }
+        }else if(query === "changeUserIcon"){
+            const { imgUrl, id }: { imgUrl: string, id: string } = body;
+            
+            if(!imgUrl || !id){
+                return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+            }
+
+            await connectDB();
+
+            await User.updateOne(
+                {id: id},
+                {
+                    $set: {
+                        iconUrl: imgUrl
+                    }
+                }
+            )
+            return NextResponse.json({ msg: "IconChanged" });
         }
     }catch(e){
         console.log(e);
+        return NextResponse.json({ error: e }, { status: 500 });
     }
 }

@@ -15,6 +15,7 @@ export type User = {
     password: string,
     familyName: string,
     firstName: string,
+    iconUrl: string
     sex: sexTypes,
     friends: Friend[]
     _id: string,
