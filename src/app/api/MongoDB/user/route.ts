@@ -19,7 +19,7 @@ export async function GET(req: Request){
             });
 
             if(!user){
-                return NextResponse.json({ error: "This email is invalid" }, { status: 400 });
+                return NextResponse.json({ error: "This email is invalid" }, { status: 200 });
             }else{
                 return NextResponse.json({ 
                     message: "Get user",
@@ -34,6 +34,8 @@ export async function GET(req: Request){
                 message: "Get all users",
                 user: users
             });
+        }else{
+            return NextResponse.json({ message: "This query is invalid" }, { status: 200 });
         }
     }catch(e){
         //console.log(e);
@@ -73,7 +75,8 @@ export async function PUT(req: Request){
     try{
         const body = await req.json();
         const { query } = body;
-
+        
+        //フレンド追加処理
         if(query === "addFriend"){
             const { userObjectId, otherUserObjectId } = body;
 
@@ -100,6 +103,8 @@ export async function PUT(req: Request){
             );
 
             return NextResponse.json({ msg: "friendAdded" });
+        
+        //指定されたフレンドを削除する処理
         }else if(query === "deleteFriend"){
             try{
                 const { requesterId, targetId, requesterFriends, targetFriends }: {requesterId: string, targetId: string, requesterFriends: Friend[], targetFriends: Friend[]} = body;
@@ -144,6 +149,7 @@ export async function PUT(req: Request){
                 console.log(e);
                 return NextResponse.json({ error: e }, { status: 500 });
             }
+    
         // 渡されたidに対応するuserにimgUrlをセット/変更
         }else if(query === "changeUserIcon"){
             const { imgUrl, id }: { imgUrl: string, id: string } = body;

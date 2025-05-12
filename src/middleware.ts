@@ -20,6 +20,7 @@ export async function middleware(req: NextRequest) {
     );
 
     const id = sessionDbData.data.id;
+    console.log(id);
 
     if (!id) {
       return NextResponse.next();
@@ -30,6 +31,7 @@ export async function middleware(req: NextRequest) {
       {
         headers: {
           "Content-Type": "application/json",
+          "query": "idToUser",
           "id": id,
         },
       }

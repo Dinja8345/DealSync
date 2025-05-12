@@ -170,14 +170,15 @@ export async function DELETE(req: Request) {
 
     const deletedDeal = await Deal.findByIdAndDelete(_id);
 
-    if (!deletedDeal) {
+    if (deletedDeal.deletedCount === 1) {
+      return NextResponse.json({
+        message: "Success delete deal",
+        deletedDeal,
+      });
+    }else{
       return NextResponse.json({ error: "Deal not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      message: "Success delete deal",
-      deletedDeal,
-    });
   } catch (e) {
     console.log(e);
     return NextResponse.json({ error: e }, { status: 500 });

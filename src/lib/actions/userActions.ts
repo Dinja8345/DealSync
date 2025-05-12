@@ -1,6 +1,6 @@
 "use server";
 
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import crypto from "crypto";
 import hashPassword from "@/lib/hashPassword";
 import verifyPassword from "@/lib/verifyPassword";
@@ -29,7 +29,8 @@ const getUserInfo = async () => {
   const id = sessionDbData.data.id;
 
   if (!id) {
-    throw new Error("sidに該当するidが存在しません");
+    return;
+    //throw new Error("sidに該当するidが存在しません");
   }
 
   const userData = await axios.get(
@@ -102,7 +103,7 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24時間
+      maxAge: 60 * 60 * 24 * 3,// ３日間
       path: "/",
     });
 
@@ -147,13 +148,17 @@ const loginUser = async (state: any, formData: FormData): Promise<userMsg> => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 60 * 60 * 24, // 24時間
+        maxAge: 60 * 60 * 24 * 3, // 3日間
         path: "/",
       });
 
       const dbRes = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
-        { sid, id }
+        { 
+          query: "createSession",
+          sid,
+          id
+        }
       );
     } else {
       return { msg: "idまたはパスワードが一致していません", success: false };
@@ -287,7 +292,7 @@ const sendFriendRequest = async (
 };
 
 
-// 
+// フレンドリクエストを取得
 const getFriendRequests = async (_id: string) => {
   try {
     const res = await axios.get(
@@ -306,6 +311,7 @@ const getFriendRequests = async (_id: string) => {
   }
 };
 
+//　フレンドリクエストを削除
 const deleteFriendRequest = async(_id: string) => {
   try {
     const payload = {
@@ -388,8 +394,27 @@ const deleteFriend = async(requesterId: string, targetId: string): Promise<delet
   }
 }
 
-const userLogout = async () => {
-  (await cookies()).delete("sid");
+const getSid = async(): Promise<string | undefined> => {
+  const sidData = (await cookies()).get("sid");
+  return sidData?.value;
+}
+
+const userLogout = async (sid: string) => {
+  try{
+    if(sid){
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
+          {
+            query: "deleteSession",
+            sid: sid
+          }
+      );
+    }
+  
+    (await cookies()).delete("sid");
+  }catch(e){
+    console.log(e);
+  }
 };
 
 // 受け取ったidから全てのuser.idを走査し、一致するものがあるかを返す
@@ -407,6 +432,7 @@ const isFriend = (myFriends: Friend[], targetId: string): boolean => {
 
 export {
   getUserInfo,
+  getSid,
   createUser,
   loginUser,
   userLogout,

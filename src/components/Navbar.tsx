@@ -3,7 +3,7 @@
 import UserIcon from "@/components/UserIcon";
 import { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { userLogout } from "@/lib/actions/userActions";
+import { getSid, userLogout } from "@/lib/actions/userActions";
 import { redirect } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
@@ -14,7 +14,14 @@ const Navbar = () => {
 
   const logoutUser = async (e: any) => {
     e.preventDefault();
-    await userLogout();
+
+    // ログアウト時にsessionStoreDBを消す。
+    const sid = await getSid();
+    // sidが存在すれば、cookieとsessionStoreDBから削除
+    if(sid){
+      await userLogout(sid);
+    }
+    
     redirect(`/users/logout`);
   };
 

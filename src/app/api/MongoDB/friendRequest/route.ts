@@ -23,8 +23,8 @@ export async function GET(req: Request){
         });
 
     }catch(e){
-        console.error(e);
-        return NextResponse.json({ error: e }, { status: 500 });
+        console.log(e);
+        return NextResponse.json({ error: "Internal ServerError" }, { status: 500 });
     }
 }
 
@@ -64,7 +64,7 @@ export async function POST(req: Request){
 
     }catch(e){
         console.error(e);
-        return NextResponse.json({ error: "Error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal ServerError" }, { status: 500 });
     }
 }
 
@@ -77,14 +77,15 @@ export async function DELETE(req: Request){
         
         await connectDB();
 
-        const deletedRequest = await FriendRequest.deleteOne({_id: _id});
+        const deletedRequest = await FriendRequest.deleteOne({ _id: _id });
 
-        if(deletedRequest){
+        if(deletedRequest.deletedCount === 1){
             return NextResponse.json({ message: "FriendRequest deleted", deletedRequest });
         }else{
-            return NextResponse.json({ error: "This _id is invalid"}, { status: 400 });
+            return NextResponse.json({ message: "This _id is invalid"}, { status: 204 });
         }
     }catch(e){
-        return NextResponse.json({ error: e }, { status: 500 });
+        console.log(e);
+        return NextResponse.json({ error: "Internal ServerError" }, { status: 500 });
     }
 }
