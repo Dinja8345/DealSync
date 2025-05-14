@@ -1,7 +1,7 @@
 "use client"
 
 import Form from "@/components/Form";
-import { useState, useActionState } from 'react';
+import { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUser } from '@/lib/actions/userActions';
 import { useUser } from "@/context/UserContext";
@@ -11,13 +11,12 @@ import type { sexTypes } from "@/types/user";
 
 const CreateUsers = () => {
   const router = useRouter();
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
 
   const handleSubmit = async(state: any, formData: FormData): Promise<userMsg> =>{
     const result = await createUser(state, formData);
     if(result.success){
       setUser(result.user);
-      router.push("/deals/view");
     } 
       
     return result;
@@ -35,6 +34,13 @@ const CreateUsers = () => {
       success: false
     }
   )
+
+  useEffect(() => {
+    console.log();
+    if(user){
+      router.push("/deals/view");
+    }
+  },[user])
 
   const contents: inputContent[] = [
     {

@@ -121,9 +121,14 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
 
     const dbRes = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
-      { sid, id }
+      {
+        query: "createSession",
+        id: id,
+        sid: sid   
+      }
     );
-    return { msg: "登録に成功", success: true };
+
+    return { msg: "登録に成功", success: true, user: newUser };
   } catch (e: any) {
     return { msg: "登録に失敗しました", success: false };
   }
