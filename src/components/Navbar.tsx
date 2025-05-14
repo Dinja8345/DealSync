@@ -36,7 +36,7 @@ const Navbar = () => {
       <nav className="bg-stone-900 fixed w-full top-0 left-0 z-40">
         <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
           {/* 左側：タイトル */}
-          <div className="text-white text-xl font-bold">DealSync</div>
+          <div className="text-white text-xl font-bold h-12 pt-2">DealSync</div>
 
           {/* PCメニュー（画面右85%） */}
           <div className="hidden md:flex w-[85%] justify-between items-center">
@@ -110,13 +110,27 @@ const Navbar = () => {
           menuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <div className="p-4">
+        <div className="p-4 pt-9">
           <div className="flex justify-end">
             <button onClick={toggleMenu}>
               <X size={24} />
             </button>
           </div>
           <div className="flex flex-col space-y-4 mt-4">
+            {
+              user ? (
+              <div className="flex justify-end space-x-3 mt-2 mr-2">
+                <div className="flex flex-col justify-center">
+                  <div>
+                    {user.id}
+                  </div>
+                </div>
+                <UserIcon familyName={user.familyName} firstName={user.firstName} iconUrl={user.iconUrl}></UserIcon>
+              </div>
+              ):(
+                <></>
+              )
+            }
             <a href="/" className={linkClass} onClick={toggleMenu}>
               ホーム
             </a>
@@ -125,6 +139,9 @@ const Navbar = () => {
             </a>
             <a href="/deals/view" className={linkClass} onClick={toggleMenu}>
               貸し借り一覧
+            </a>
+            <a href="/users/management" className={linkClass} onClick={toggleMenu}>
+              ユーザ管理
             </a>
             <a href="/users/friends" className={linkClass} onClick={toggleMenu}>
               フレンド管理

@@ -12,7 +12,7 @@ export async function GET(req: Request){
 
         const friendRequests = await FriendRequest.find({receiver: _id}).populate({
             path: 'sender',
-            select: 'familyName firstName id'
+            select: 'familyName firstName id iconUrl'
         });
 
         //console.log(friendRequests);

@@ -4,16 +4,22 @@ import Form from "@/components/Form";
 import { useState, useActionState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUser } from '@/lib/actions/userActions';
+import { useUser } from "@/context/UserContext";
 import type { inputContent } from "@/types/form";
 import type { userMsg } from "@/lib/actions/userActions";
 import type { sexTypes } from "@/types/user";
 
 const CreateUsers = () => {
   const router = useRouter();
-  
+  const { setUser } = useUser();
+
   const handleSubmit = async(state: any, formData: FormData): Promise<userMsg> =>{
     const result = await createUser(state, formData);
-    if(result.success) router.push("/deals/view");
+    if(result.success){
+      setUser(result.user);
+      router.push("/deals/view");
+    } 
+      
     return result;
   }
 

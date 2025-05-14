@@ -33,6 +33,7 @@ export type RequestSender = {
     familyName: string,
     firstName: string,
     id: string,
+    iconUrl: string
 }
 
 export type FriendRequest = {

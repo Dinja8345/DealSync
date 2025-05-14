@@ -57,7 +57,7 @@ const FriendsManagement = () => {
 
       const alreadyFriend = await isFriend(user.friends, requestId);
       if (alreadyFriend) {
-        setRequestStatus({ type: 'info', message: `ユーザー (${alreadyFriend}) は既にフレンドです。`}); // Use 'info' type
+        setRequestStatus({ type: 'info', message: `ユーザー (${requestId}) は既にフレンドです。`}); // Use 'info' type
         return;
       }
 
@@ -165,7 +165,7 @@ const FriendsManagement = () => {
                   friendId={request.sender.id}
                   familyName={request.sender.familyName}
                   firstName={request.sender.firstName}
-
+                  iconUrl={request.sender.iconUrl}
                   requestDate={request.createdAt}
                   // isRequestCard={true} // 必要であればFriendCard側でスタイルを分けるためのprop
                 />

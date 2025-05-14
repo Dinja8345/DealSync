@@ -47,7 +47,7 @@ export async function POST(req: Request){
     try{
         const body = await req.json();
         const { familyName, firstName, sex, email, password, id } = body;
-        if(!familyName || !firstName || !sex || !email || !password || !id) return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+        if(!familyName || !firstName || !sex || !email || !password || !id) return NextResponse.json({ error: "This request is invalid" }, { status: 200 });
         await connectDB();
         
         const newUser = new User({
@@ -65,9 +65,12 @@ export async function POST(req: Request){
             message: "user saved",
             newUser
         });
-    }catch(e){
-        console.error(e);
-        return NextResponse.json({ error: e }, { status: 500 });
+    }catch(e: any){
+        if(e.code === 11000){
+            return NextResponse.json({ error: "重複エラー" }, { status: 400 })
+        }else{
+            return NextResponse.json({ error: e }, { status: 500 });
+        }
     }
 }
 

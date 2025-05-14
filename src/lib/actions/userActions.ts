@@ -89,7 +89,7 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
   const hashedPass = await hashPassword(password);
 
   try {
-    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, {
       familyName,
       firstName,
       sex,
@@ -97,6 +97,12 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
       password: hashedPass,
       id,
     });
+    
+    if(res.status === 400){
+      return { msg: "同じIDか、メールアドレスのユーザーがいます。", success: false };
+    }
+    //レスポンスから作成されたuserデータを取得
+    const newUser = res.data.newUser;
 
     const sid = crypto.randomBytes(32).toString("hex");
     (await cookies()).set("sid", sid, {
@@ -112,8 +118,7 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
       { sid, id }
     );
     return { msg: "登録に成功", success: true };
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
     return { msg: "登録に失敗しました", success: false };
   }
 };

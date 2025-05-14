@@ -48,7 +48,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(
       new URL(`${process.env.NEXT_PUBLIC_API_URL}/deals/view`)
     );
-  }else if(req.nextUrl.pathname === "/deals/add" || req.nextUrl.pathname === "/deals/view"){
+  }else if(req.nextUrl.pathname === "/deals/add" 
+        || req.nextUrl.pathname === "/deals/view"
+        || req.nextUrl.pathname === "/users/friends"
+        || req.nextUrl.pathname === "/users/management"
+      ){
     const cookie = req.cookies.get("sid");
     const sid = cookie?.value;
     if (!sid) {

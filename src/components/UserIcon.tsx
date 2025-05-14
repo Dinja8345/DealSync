@@ -4,6 +4,8 @@ export interface UserIconProps {
   familyName: string;
   firstName: string;
   iconUrl?: string;
+  custumIconClass?: string;
+  textPadding?: string
   onClick?: any;
 }
 
@@ -11,26 +13,40 @@ const UserIcon: React.FC<UserIconProps> = ({
   familyName,
   firstName,
   iconUrl,
+  custumIconClass,
+  textPadding,
   onClick,
 }) => {
-  const iconClass = "w-12 h-12 rounded-full object-cover cursor-pointer"; // 48px に拡大
-
+  const iconClass = custumIconClass ? custumIconClass : "w-12 h-12 text-xl"; // 48px に拡大
+  const padding = textPadding ? textPadding : "px-3";
   return (
     <>
       {iconUrl ? (
         <img
           src={iconUrl}
           alt="ユーザーアイコン"
-          className={iconClass}
+          className={iconClass + " rounded-full object-cover cursor-pointer"}
           onClick={onClick}
         />
       ) : (
         <div
           onClick={onClick}
-          className="bg-blue-100 text-blue-800 font-bold rounded-full h-12 w-12 flex items-center justify-center text-xl"
+          className={
+            iconClass +
+            " bg-blue-100 text-blue-800 font-bold rounded-full flex items-center justify-center " +
+            padding
+          }
         >
-          {familyName[0]}
-          {firstName[0]}
+          <div className="flex-1">
+            <div className="flex justify-center">
+              <div>{familyName[0]}</div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="flex justify-center">
+              <div>{firstName[0]}</div>
+            </div>
+          </div>
         </div>
       )}
     </>
