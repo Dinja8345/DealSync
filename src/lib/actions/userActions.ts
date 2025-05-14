@@ -89,17 +89,23 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
   const hashedPass = await hashPassword(password);
 
   try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`, {
-      familyName,
-      firstName,
-      sex,
-      email,
-      password: hashedPass,
-      id,
-    });
-    
-    if(res.status === 400){
-      return { msg: "同じIDか、メールアドレスのユーザーがいます。", success: false };
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        familyName,
+        firstName,
+        sex,
+        email,
+        password: hashedPass,
+        id,
+      }
+    );
+
+    if (res.status === 400) {
+      return {
+        msg: "同じIDか、メールアドレスのユーザーがいます。",
+        success: false,
+      };
     }
     //レスポンスから作成されたuserデータを取得
     const newUser = res.data.newUser;
@@ -109,7 +115,7 @@ const createUser = async (state: any, formData: FormData): Promise<userMsg> => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 3,// ３日間
+      maxAge: 60 * 60 * 24 * 3, // ３日間
       path: "/",
     });
 
@@ -159,10 +165,10 @@ const loginUser = async (state: any, formData: FormData): Promise<userMsg> => {
 
       const dbRes = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
-        { 
+        {
           query: "createSession",
           sid,
-          id
+          id,
         }
       );
     } else {
@@ -248,7 +254,6 @@ interface Msg {
   };
 }
 
-
 // フレンドリクエストをdbに登録
 const sendFriendRequest = async (
   senderId: string,
@@ -296,7 +301,6 @@ const sendFriendRequest = async (
   }
 };
 
-
 // フレンドリクエストを取得
 const getFriendRequests = async (_id: string) => {
   try {
@@ -317,7 +321,7 @@ const getFriendRequests = async (_id: string) => {
 };
 
 //　フレンドリクエストを削除
-const deleteFriendRequest = async(_id: string) => {
+const deleteFriendRequest = async (_id: string) => {
   try {
     const payload = {
       _id: _id,
@@ -336,24 +340,24 @@ const deleteFriendRequest = async(_id: string) => {
   }
 };
 
-
-export interface deleteMsg{
+export interface deleteMsg {
   success: boolean;
   msg: string;
 }
 
 // お互いのフレンドから削除
-const deleteFriend = async(requesterId: string, targetId: string): Promise<deleteMsg> => {
-
-  try{
-    
+const deleteFriend = async (
+  requesterId: string,
+  targetId: string
+): Promise<deleteMsg> => {
+  try {
     const isRequesterExisting = await isUserIdExisting(requesterId);
-    if(!isRequesterExisting){
+    if (!isRequesterExisting) {
       return { success: false, msg: "エラー: あなたのidが存在しません。" };
     }
 
     const isTargetExisting = await isUserIdExisting(targetId);
-    if(!isTargetExisting){
+    if (!isTargetExisting) {
       return { success: false, msg: "指定された相手のidが存在しません。" };
     }
 
@@ -363,8 +367,8 @@ const deleteFriend = async(requesterId: string, targetId: string): Promise<delet
         headers: {
           "Content-Type": "application/json",
           query: "idToUser",
-          id: requesterId
-        }
+          id: requesterId,
+        },
       }
     );
 
@@ -376,48 +380,81 @@ const deleteFriend = async(requesterId: string, targetId: string): Promise<delet
         headers: {
           "Content-Type": "application/json",
           query: "idToUser",
-          id: targetId
-        }
+          id: targetId,
+        },
       }
     );
 
     const targetFriends = targetInfo.data.user.friends;
 
     const result = await axios.put(
-       `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,{
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
         query: "deleteFriend",
-        requesterId: requesterId, 
+        requesterId: requesterId,
         targetId: targetId,
         requesterFriends: requesterFriends,
-        targetFriends: targetFriends
-       });
+        targetFriends: targetFriends,
+      }
+    );
 
     return { success: true, msg: "フレンド削除に成功しました。" };
-  }catch(e){
+  } catch (e) {
     console.log(e);
     return { success: false, msg: "フレンド削除中にエラー" };
   }
-}
+};
 
-const getSid = async(): Promise<string | undefined> => {
+const updateUserInfo = async(
+  familyName: string,
+  firstName: string,
+  id: string,
+  email: string,
+  _id: string
+): Promise<userMsg> => {
+  try{
+    if (!familyName || !firstName || !id || !email || !_id) {
+      return { msg: "入力が不正です", success: false };
+    }
+
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/user`,
+      {
+        query: "updateUserInfo",
+        familyName: familyName,
+        firstName: firstName,
+        id: id,
+        email: email,
+        _id: _id
+      }
+    );
+
+    return { msg: "更新に成功", success: true };
+  }catch(e){
+    console.log(e);
+    return { msg: "ユーザ情報更新中にエラーが発生しました", success: false }
+  }
+};
+
+const getSid = async (): Promise<string | undefined> => {
   const sidData = (await cookies()).get("sid");
   return sidData?.value;
-}
+};
 
 const userLogout = async (sid: string) => {
-  try{
-    if(sid){
+  try {
+    if (sid) {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/MongoDB/sessionStore`,
-          {
-            query: "deleteSession",
-            sid: sid
-          }
+        {
+          query: "deleteSession",
+          sid: sid,
+        }
       );
     }
-  
+
     (await cookies()).delete("sid");
-  }catch(e){
+  } catch (e) {
     console.log(e);
   }
 };
@@ -445,6 +482,7 @@ export {
   addUserFriend,
   isUserIdExisting,
   isFriend,
+  updateUserInfo,
   sendFriendRequest,
   getFriendRequests,
   deleteFriendRequest,

@@ -1,16 +1,15 @@
 const TopPage = () => {
-  const homeClass = "w-screen h-screen bg-[url('/handshake.jpg')] bg-center bg-cover bg-no-repeat relative"
-  const textColor = "text-gray-50"
+  const homeClass = "fixed inset-0 bg-[url('/handshake.jpg')] bg-center bg-cover bg-no-repeat flex flex-col items-center";
+  const overlayClass = "absolute inset-0 bg-black opacity-50";
+  const textColor = "text-gray-50";
+  const headingClass = `text-4xl font-black relative z-10 ${textColor} mt-40`;
+  const subheadingClass = `relative z-10 ${textColor}`;
 
   return (
     <div className={homeClass}>
-      <div className={"absolute inset-0 bg-black opacity-50"}></div>
-      <div className="flex justify-center">
-        <h1 className={"py-7 text-3xl font-black relative z-10 "  + textColor}>DealSync</h1>
-      </div>
-      <div className={"flex justify-center relative z-10 " + textColor}>
-        <h3 className="">あなたのお金の貸し借りを管理します。</h3>
-      </div>
+      <div className={overlayClass}></div>
+      <h1 className={headingClass}>DealSync</h1>
+      <h3 className={subheadingClass}>あなたのお金の貸し借りを管理します。</h3>
     </div>
   );
 };

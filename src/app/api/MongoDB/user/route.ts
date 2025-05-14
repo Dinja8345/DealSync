@@ -158,7 +158,7 @@ export async function PUT(req: Request){
             const { imgUrl, id }: { imgUrl: string, id: string } = body;
             
             if(!imgUrl || !id){
-                return NextResponse.json({ error: "This request is invalid" }, { status: 400 });
+                return NextResponse.json({ msg: "This request is invalid" }, { status: 200 });
             }
 
             await connectDB();
@@ -170,8 +170,31 @@ export async function PUT(req: Request){
                         iconUrl: imgUrl
                     }
                 }
-            )
-            return NextResponse.json({ msg: "IconChanged" });
+            );
+
+            return NextResponse.json({ msg: "IconChanged" }, { status: 200 });
+        }else if(query === "updateUserInfo"){
+            const { familyName, firstName, id, email, _id } = body;
+            
+            if(!familyName || !firstName || !id || !email || !_id){
+                return NextResponse.json({ msg: "This request is invalid" }, { status: 200 })
+            }
+
+            await connectDB();
+
+            await User.updateOne(
+                {_id: _id},
+                {
+                    $set: {
+                        familyName: familyName,
+                        firstName: firstName,
+                        id: id,
+                        email: email
+                    }
+                }
+            );
+
+            return NextResponse.json({ msg: "userInfo updated" }, { status: 200 }); 
         }
     }catch(e){
         console.log(e);
