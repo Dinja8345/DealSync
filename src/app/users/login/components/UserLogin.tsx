@@ -1,6 +1,7 @@
 "use client";
 
 import Form from "@/components/Form";
+import LoadingIcon from "@/components/LoadingIcon";
 import { useUser } from "@/context/UserContext";
 import { useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
@@ -25,7 +26,7 @@ const UserLogin = () => {
     return result;
   };
 
-  const [loginMsg, loginAction] = useActionState<userMsg, FormData>(
+  const [loginMsg, loginAction, isPending] = useActionState<userMsg, FormData>(
     handleSubmit,
     { msg: "", success: false }
   );
@@ -50,17 +51,16 @@ const UserLogin = () => {
   ];
 
   return (
-    <>
-      <div className="p-10">
-        <Form
-          title="ログイン"
-          inputContents={inputContents}
-          state={loginMsg}
-          action={loginAction}
-          btnText="ログイン"
-        />
-      </div>
-    </>
+    <div className="p-10">
+      <Form
+        title="ログイン"
+        inputContents={inputContents}
+        state={loginMsg}
+        action={loginAction}
+        btnText="ログイン"
+      />
+      <div className="flex justify-center">{isPending ? <LoadingIcon /> : <></>}</div>
+    </div>
   );
 };
 export default UserLogin;

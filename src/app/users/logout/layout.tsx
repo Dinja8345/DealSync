@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "ログアウト",
-  description: "仮ログアウトルート",
+  description: "ログアウトページ",
 };
 
 export default function RootLayout({
