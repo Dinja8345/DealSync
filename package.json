@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:MongoDB": "mongod --quiet",
-    "dev:json-server": "npx json-server -w ./mock/db.json -p 3010",
     "dev:next": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
